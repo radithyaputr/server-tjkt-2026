@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TJKT 1 - Angkatan 54 | Portal Kelas</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600&display=swap"
+                rel="stylesheet">
+
+        <!-- Icons -->
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+        <!-- Tailwind Config -->
+        <script>
+                tailwind.config = {
+                        darkMode: 'class',
+                        theme: {
+                                extend: {
+                                        colors: {
+                                                primary: 'var(--color-primary)',
+                                                'primary-hover': 'var(--color-primary-hover)',
+                                                surface: 'var(--color-surface)',
+                                                'surface-container': 'var(--color-surface-container)',
+                                                'surface-container-high': 'var(--color-surface-container-high)',
+                                                'on-surface': 'var(--color-on-surface)',
+                                                'on-surface-variant': 'var(--color-on-surface-variant)',
+                                                'on-background': 'var(--color-on-background)'
+                                        },
+                                        fontFamily: {
+                                                sans: ['Inter', 'sans-serif'],
+                                                serif: ['Noto Serif', 'serif'],
+                                                label: ['Public Sans', 'sans-serif']
+                                        }
+                                }
+                        }
+                }
+        </script>
+        <script>
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                        document.documentElement.classList.add('dark');
+                }
+        </script>
+        <style>
+                :root {
+                        --color-primary: #094cb2;
+                        --color-primary-hover: #073d8f;
+                        --color-surface: #faf9fa;
+                        --color-surface-container: #f0eef1;
+                        --color-surface-container-high: #e3dfe5;
+                        --color-on-surface: #1c1b1f;
+                        --color-on-surface-variant: #49454f;
+                        --color-on-background: #1c1b1f;
+                }
+
+                .dark {
+                        --color-primary: #a8c7fa;
+                        --color-primary-hover: #d3e3fd;
+                        --color-surface: #131314;
+                        --color-surface-container: #1e1f20;
+                        --color-surface-container-high: #333537;
+                        --color-on-surface: #e2e2e2;
+                        --color-on-surface-variant: #c4c7c5;
+                        --color-on-background: #e2e2e2;
+                }
+
+                .dark .bg-white:not(.text-primary) {
+                        background-color: var(--color-surface-container-high);
+                        border-color: #444746;
+                        color: var(--color-on-surface);
+                }
+
+                .dark .bg-blue-50 {
+                        background-color: rgba(168, 199, 250, 0.15);
+                }
+
+                /* Smooth Scrolling */
+                html {
+                        scroll-behavior: smooth;
+                }
+
+                /* Modal Transitions */
+                #downloadModal, #loginModal {
+                        transition: opacity 0.3s ease, visibility 0.3s ease;
+                }
+
+                #downloadModal .modal-content, #loginModal .modal-content {
+                        transition: transform 0.3s ease;
+                        transform: scale(0.95);
+                }
+
+                #downloadModal:not(.hidden) .modal-content, #loginModal:not(.hidden) .modal-content {
+                        transform: scale(1);
+                }
+        </style>
+</head>
+
+<body class="bg-surface text-on-surface font-sans antialiased overflow-x-hidden selection:bg-primary/20">
+
+        <!-- 1. Sticky Navbar -->
+        <header
+                class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-surface-container-high shadow-sm">
+                <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-3xl">dns</span>
+                                <span class="font-serif font-bold text-2xl text-primary tracking-tight">TJKT 1</span>
+                        </div>
+
+                        <nav class="hidden md:flex items-center gap-8 font-label font-medium text-on-surface-variant">
+                                <a href="#beranda" class="hover:text-primary transition-colors">Beranda</a>
+                                <a href="#downloads" class="hover:text-primary transition-colors">Data & Files</a>
+                                <a href="/repository/" target="_blank" class="hover:text-primary transition-colors flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[18px]">folder_open</span> Repository
+                                </a>
+                                <a href="#angkatan" class="hover:text-primary transition-colors">Angkatan 54</a>
+                                <a href="#credits" class="hover:text-primary transition-colors">Team Pembuat</a>
+                        </nav>
+
+                        <div class="flex items-center gap-2">
+                                <button onclick="toggleTheme()"
+                                        class="text-on-surface-variant hover:text-primary p-2 rounded-full transition-colors flex items-center justify-center bg-surface-container hover:bg-surface-container-high"
+                                        title="Toggle Dark Mode">
+                                        <span id="theme-icon"
+                                                class="material-symbols-outlined text-[22px]">light_mode</span>
+                                </button>
+
+                                <button id="loginBtn" onclick="openLoginModal()"
+                                        class="hidden sm:flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full font-label font-medium transition-all shadow-md hover:shadow-lg active:scale-95 ml-2">
+                                        <span class="material-symbols-outlined text-[20px]">login</span>
+                                        <span id="loginBtnText">Login</span>
+                                </button>
+
+                                <button class="md:hidden text-on-surface p-2 ml-2">
+                                        <span class="material-symbols-outlined">menu</span>
+                                </button>
+                        </div>
+                </div>
+        </header>
+
+        <!-- 2. Hero Section -->
+        <section id="beranda" class="relative min-h-[85vh] flex items-center bg-cover bg-center bg-no-repeat"
+                style="background-image: url('./hero-bg.jpeg');">
+                <!-- Dark Overlay -->
+                <div
+                        class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/75 to-black/90 backdrop-blur-[1px]">
+                </div>
+
+                <div class="container mx-auto px-6 relative z-10 text-white flex flex-col items-center text-center">
+                        <span
+                                class="bg-primary/20 text-blue-200 border border-primary/30 px-4 py-1.5 rounded-full font-label text-sm font-medium mb-6 tracking-wide backdrop-blur-sm shadow-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                                SMKN 1 Kota Bengkulu - Angkatan 54
+                        </span>
+                        <h1
+                                class="font-serif font-bold text-6xl md:text-8xl tracking-tight mb-2 drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">
+                                TJKT 1
+                        </h1>
+                        <p
+                                class="font-serif italic text-2xl md:text-3xl text-gray-300 mb-8 font-light drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">
+                                Kelas 12
+                        </p>
+                        <p
+                                class="max-w-2xl text-lg md:text-xl text-gray-200 leading-relaxed mb-10 font-sans drop-shadow-[0_4px_8px_rgba(0,0,0,0.9)]">
+                                Arsip digital dan pusat sumber daya untuk administrasi server & jaringan. Server lokal
+                                terpusat untuk unduhan ISO software, penyimpanan cloud, dan memori kelas kita.
+                        </p>
+                        <a href="#downloads"
+                                class="flex items-center gap-2 bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-full font-label font-semibold text-lg transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:translate-y-0">
+                                Jelajahi File
+                                <span class="material-symbols-outlined">arrow_downward</span>
+                        </a>
+                </div>
+        </section>
+
+        <!-- 3. Pusat Unduhan (Downloads) -->
+        <section id="downloads" class="py-24 bg-surface-container relative">
+                <div class="container mx-auto px-6">
+                        <div class="text-center mb-16">
+                                <h2 class="font-serif font-bold text-4xl text-on-surface mb-4">Pusat Unduhan</h2>
+                                <p class="text-on-surface-variant font-sans max-w-2xl mx-auto">Akses cepat ke berbagai
+                                        file ISO dan aplikasi yang dibutuhkan untuk pembelajaran administrasi server dan
+                                        jaringan.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                                id="download-grid">
+                                <div class="col-span-full text-center text-on-surface-variant" id="download-loading">
+                                        Loading files...
+                                </div>
+                        </div>
+                </div>
+        </section>
+
+        <!-- 5. Galeri Angkatan 54 -->
+        <section id="angkatan" class="py-24 bg-surface">
+                <div class="container mx-auto px-6">
+                        <div class="text-center mb-16">
+                                <h2 class="font-serif font-bold text-4xl text-on-surface mb-4">Galeri Angkatan 54</h2>
+                                <p class="text-on-surface-variant font-sans max-w-2xl mx-auto">33 Siswa/i hebat dari
+                                        TJKT 1 yang selalu solid dan penuh semangat.</p>
+                        </div>
+
+                        <div id="student-grid"
+                                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                                <!-- Injected via Vanilla JS -->
+                        </div>
+                </div>
+        </section>
+
+        <!-- 6. Team Pembuat (Credits) -->
+        <section id="credits" class="py-24 relative overflow-hidden">
+                <!-- Glassmorphism Background -->
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-900 via-primary to-indigo-900 z-0"></div>
+                <!-- Decorative blobs -->
+                <div
+                        class="absolute top-0 left-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse">
+                </div>
+                <div
+                        class="absolute bottom-0 right-0 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse animation-delay-2000">
+                </div>
+
+                <div class="container mx-auto px-6 relative z-10">
+                        <div
+                                class="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl text-white text-center">
+                                <span class="material-symbols-outlined text-5xl text-blue-300 mb-6 block">code</span>
+                                <h2 class="font-serif font-bold text-3xl md:text-4xl mb-4">Team Pembuat</h2>
+                                <p class="text-blue-100 mb-10 text-lg">Web dan server lokal ini dirancang dan
+                                        dikembangkan dengan penuh dedikasi oleh tim hebat dari TJKT 1.</p>
+
+                                <div class="flex flex-wrap justify-center gap-4">
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Irsyad
+                                                                Solih</span>
+                                                        <span class="text-xs text-blue-200">Hardware Engineer</span>
+                                                </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Adiel
+                                                                Radithya Putra Irwana</span>
+                                                        <span class="text-xs text-blue-200">Software Engineer</span>
+                                                </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Muhammad
+                                                                Akbar Dwiman</span>
+                                                        <span class="text-xs text-blue-200">IT Support</span>
+                                                </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Fachri
+                                                                Majidan Afandi</span>
+                                                        <span class="text-xs text-blue-200">IT Support</span>
+                                                </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Muhammad
+                                                                Althoof Adji Hidayat</span>
+                                                        <span class="text-xs text-blue-200">Hardware Support
+                                                                Engineer</span>
+                                                </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Muhammad
+                                                                Fikri Haikal</span>
+                                                        <span class="text-xs text-blue-200">Server Developer</span>
+                                                </div>
+                                        </div>
+                                        <div
+                                                class="flex items-center gap-3 bg-white/10 hover:bg-white/20 transition-colors px-6 py-3 rounded-full border border-white/10">
+                                                <span
+                                                        class="material-symbols-outlined text-xl text-blue-300">person</span>
+                                                <div class="flex flex-col text-left">
+                                                        <span class="font-label font-medium leading-tight">Yafi
+                                                                Ahmad</span>
+                                                        <span class="text-xs text-blue-200">Conceptor</span>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </section>
+
+        <!-- 7. Footer -->
+        <footer class="bg-surface-container py-8 border-t border-surface-container-high">
+                <div class="container mx-auto px-6 text-center flex flex-col items-center">
+                        <p class="text-on-surface-variant font-sans text-sm">
+                                &copy; 2026 TJKT 1 SMKN 1 Kota Bengkulu — Web & Server Team.
+                        </p>
+                </div>
+        </footer>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeLoginModal()"></div>
+                <div class="modal-content bg-white rounded-2xl w-[90%] max-w-sm p-6 relative z-10 shadow-2xl border border-surface-container-high transform scale-95 transition-transform duration-300">
+                        <h3 class="font-serif font-bold text-2xl text-on-surface mb-4">Login Server</h3>
+                        <div id="loginError" class="hidden text-red-500 text-sm mb-4"></div>
+                        <input type="text" id="username" placeholder="Username" class="w-full mb-3 bg-surface-container border border-surface-container-high text-on-surface rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        <input type="password" id="password" placeholder="Password" class="w-full mb-6 bg-surface-container border border-surface-container-high text-on-surface rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                        
+                        <div class="flex gap-3 justify-end">
+                                <button onclick="closeLoginModal()" class="px-5 py-2.5 rounded-lg font-label font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Batal</button>
+                                <button onclick="handleLogin()" class="px-5 py-2.5 rounded-lg font-label font-medium bg-primary text-white hover:bg-primary-hover shadow-md transition-all">Masuk</button>
+                        </div>
+                </div>
+        </div>
+
+        <!-- Download Confirmation Modal -->
+        <div id="downloadModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal()"></div>
+                <div class="modal-content bg-white rounded-2xl w-[90%] max-w-md p-6 relative z-10 shadow-2xl border border-surface-container-high transform scale-95 transition-transform duration-300">
+                        <h3 class="font-serif font-bold text-2xl text-on-surface mb-6">Konfirmasi Unduhan</h3>
+                        <p class="text-on-surface-variant font-sans text-sm mb-1">Anda akan mengunduh:</p>
+                        <p id="modalFileName" class="font-sans font-semibold text-lg text-primary mb-6">Nama File</p>
+                        
+                        <div class="flex gap-3 justify-end mt-4">
+                                <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg font-label text-on-surface-variant hover:bg-surface-container">Batal</button>
+                                <button id="startDownloadBtn" onclick="startDownload()" class="px-5 py-2.5 rounded-lg font-label bg-primary text-white hover:bg-primary-hover flex items-center gap-2"><span class="material-symbols-outlined text-[20px]">download</span>Mulai Download</button>
+                        </div>
+                </div>
+        </div>
+
+        <!-- JavaScript Logic -->
+        <script>
+                // Theme
+                const themeIcon = document.getElementById('theme-icon');
+                function updateThemeIcon() {
+                        themeIcon.textContent = document.documentElement.classList.contains('dark') ? 'dark_mode' : 'light_mode';
+                }
+                function toggleTheme() {
+                        document.documentElement.classList.toggle('dark');
+                        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                        updateThemeIcon();
+                }
+                if (themeIcon) updateThemeIcon();
+
+                // Authentication
+                const loginBtn = document.getElementById('loginBtn');
+                const loginBtnText = document.getElementById('loginBtnText');
+                let isLoggedIn = false;
+                let userRole = null;
+
+                async function checkAuth() {
+                        try {
+                                const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+                                if (res.ok) {
+                                        const data = await res.json();
+                                        isLoggedIn = true;
+                                        userRole = data.role;
+                                        loginBtnText.textContent = "Logout";
+                                        loginBtn.querySelector('.material-symbols-outlined').textContent = "logout";
+                                }
+                        } catch (e) {
+                                isLoggedIn = false;
+                                userRole = null;
+                        }
+                }
+
+                function isAdmin() {
+                        return userRole === 'Admin' || userRole === 'Guru';
+                }
+
+                function openLoginModal() {
+                        if (isLoggedIn) {
+                                // Logout
+                                fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
+                                        .finally(() => window.location.reload());
+                        } else {
+                                const modal = document.getElementById('loginModal');
+                                modal.classList.remove('hidden');
+                                void modal.offsetWidth;
+                                modal.classList.remove('opacity-0');
+                                modal.querySelector('.modal-content').classList.remove('scale-95');
+                        }
+                }
+
+                function closeLoginModal() {
+                        const modal = document.getElementById('loginModal');
+                        modal.classList.add('opacity-0');
+                        modal.querySelector('.modal-content').classList.add('scale-95');
+                        setTimeout(() => modal.classList.add('hidden'), 300);
+                }
+
+                async function handleLogin() {
+                        const user = document.getElementById('username').value;
+                        const pass = document.getElementById('password').value;
+                        const err = document.getElementById('loginError');
+                        
+                        try {
+                                const res = await fetch('/api/auth/login', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username: user, password: pass }),
+                                        credentials: 'same-origin'
+                                });
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.message || 'Login gagal');
+                                
+                                window.location.reload();
+                        } catch (error) {
+                                err.textContent = error.message;
+                                err.classList.remove('hidden');
+                        }
+                }
+
+                // Upload logic
+                let uploadInput = null;
+                let uploadLabel = null;
+
+                function createUploadCard() {
+                        const div = document.createElement('div');
+                        div.className = 'bg-white rounded-2xl p-6 border-2 border-dashed border-primary/40 hover:border-primary transition-colors';
+                        div.id = 'upload-card';
+                        div.innerHTML = `
+                                <div class="flex flex-col gap-3">
+                                        <div class="flex items-center gap-2">
+                                                <span class="material-symbols-outlined text-2xl text-primary">add_circle</span>
+                                                <span class="font-label font-semibold text-primary text-lg">Upload File</span>
+                                        </div>
+                                        <select id="categorySelect" class="w-full bg-surface-container border border-surface-container-high text-on-surface rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="01_Sistem_Operasi">Sistem Operasi</option>
+                                                <option value="02_Aplikasi_Utama">Aplikasi Utama</option>
+                                                <option value="03_Tools_Praktik_TJKT" selected>Tools Praktik TJKT</option>
+                                                <option value="04_Video_Tutorial">Video Tutorial</option>
+                                        </select>
+                                        <input type="file" id="fileInput" class="hidden" />
+                                        <label for="fileInput" class="flex flex-col items-center gap-2 cursor-pointer w-full py-4 border-2 border-dashed border-primary/20 rounded-xl hover:border-primary/60 transition-colors">
+                                                <span class="text-xs text-on-surface-variant">PDF, ZIP, RAR, DOCX, ISO, gambar — unlimited size</span>
+                                                <span id="uploadStatus" class="text-xs text-on-surface-variant mt-1"></span>
+                                        </label>
+                                </div>
+                        `;
+                        const input = div.querySelector('#fileInput');
+                        const label = div.querySelector('label[for="fileInput"]');
+                        input.addEventListener('change', async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                const category = document.getElementById('categorySelect').value;
+                                const status = document.getElementById('uploadStatus');
+                                status.textContent = 'Uploading...';
+                                status.className = 'text-xs text-blue-500 mt-1';
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                formData.append('category', category);
+                                try {
+                                        const res = await fetch('/api/files/upload', {
+                                                method: 'POST',
+                                                body: formData,
+                                                credentials: 'same-origin'
+                                        });
+                                        const data = await res.json();
+                                        if (!res.ok) throw new Error(data.message || 'Upload gagal');
+                                        status.textContent = 'Upload berhasil!';
+                                        status.className = 'text-xs text-green-500 mt-1';
+                                        setTimeout(() => { loadFiles(); }, 500);
+                                } catch (err) {
+                                        status.textContent = 'Error: ' + err.message;
+                                        status.className = 'text-xs text-red-500 mt-1';
+                                }
+                                input.value = '';
+                        });
+                        return div;
+                }
+
+                const CATEGORY_LABELS = {
+                        '01_Sistem_Operasi': 'Sistem Operasi',
+                        '02_Aplikasi_Utama': 'Aplikasi Utama',
+                        '03_Tools_Praktik_TJKT': 'Tools Praktik TJKT',
+                        '04_Video_Tutorial': 'Video Tutorial'
+                };
+
+                function createFileCard(file) {
+                        const card = document.createElement('div');
+                        card.className = 'bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow border border-surface-container-high group flex flex-col h-full';
+                        const delBtn = isAdmin()
+                                ? `<button onclick="deleteFile(${file.id})" class="w-full py-2.5 rounded-lg border-2 border-red-400 text-red-500 font-label font-semibold hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-2 mt-2">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span> Hapus
+                                   </button>`
+                                : '';
+                        const catLabel = CATEGORY_LABELS[file.category] || file.category;
+                        card.innerHTML = `
+                                <div class="flex items-center gap-2 mb-4">
+                                        <span class="bg-primary/10 text-primary text-xs font-label font-medium px-3 py-1 rounded-full">${catLabel}</span>
+                                </div>
+                                <div class="w-14 h-14 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <span class="material-symbols-outlined text-3xl">insert_drive_file</span>
+                                </div>
+                                <h3 class="font-sans font-semibold text-lg mb-2 text-on-surface truncate" title="${file.originalName}">${file.originalName}</h3>
+                                <p class="text-sm text-on-surface-variant mb-6 flex-grow">Diunduh: ${file.downloadCount} kali</p>
+                                <button onclick="openModal('${file.originalName.replace(/'/g, "\\'")}', ${file.id})" class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-label font-semibold hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-[18px]">download</span> Download
+                                </button>
+                                ${delBtn}
+                        `;
+                        return card;
+                }
+
+                async function deleteFile(fileId) {
+                        if (!confirm('Hapus file ini?')) return;
+                        try {
+                                const res = await fetch('/api/files/' + fileId, {
+                                        method: 'DELETE',
+                                        credentials: 'same-origin'
+                                });
+                                if (!res.ok) throw new Error('Gagal menghapus');
+                                loadFiles();
+                        } catch (e) {
+                                alert(e.message);
+                        }
+                }
+
+                // Fetching files (public — no login required)
+                async function loadFiles() {
+                        const grid = document.getElementById('download-grid');
+                        
+                        try {
+                                const res = await fetch('/api/files');
+                                if (!res.ok) throw new Error('Failed to fetch files');
+                                const files = await res.json();
+                                
+                                grid.innerHTML = '';
+
+                                if (isAdmin()) {
+                                        grid.appendChild(createUploadCard());
+                                }
+                                
+                                if (files.length === 0 && !isAdmin()) {
+                                        grid.innerHTML = '<div class="col-span-full text-center text-on-surface-variant">Belum ada file yang diupload.</div>';
+                                        return;
+                                }
+                                
+                                files.forEach(file => {
+                                        grid.appendChild(createFileCard(file));
+                                });
+                        } catch (e) {
+                                grid.innerHTML = '<div class="col-span-full text-center text-red-500">Gagal mengambil data file.</div>';
+                        }
+                }
+
+                // Download logic
+                let currentDownloadId = null;
+                function openModal(fileName, fileId) {
+                        document.getElementById('modalFileName').textContent = fileName;
+                        currentDownloadId = fileId;
+                        
+                        const modal = document.getElementById('downloadModal');
+                        modal.classList.remove('hidden');
+                        void modal.offsetWidth;
+                        modal.classList.remove('opacity-0');
+                        modal.querySelector('.modal-content').classList.remove('scale-95');
+                }
+
+                function closeModal() {
+                        const modal = document.getElementById('downloadModal');
+                        modal.classList.add('opacity-0');
+                        modal.querySelector('.modal-content').classList.add('scale-95');
+                        setTimeout(() => modal.classList.add('hidden'), 300);
+                }
+
+                async function startDownload() {
+                        if (!currentDownloadId) return;
+                        
+                        const btn = document.getElementById('startDownloadBtn');
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">sync</span> Loading...';
+                        btn.disabled = true;
+                        
+                        try {
+                                const response = await fetch('/api/files/download/' + currentDownloadId, {
+                                        credentials: 'same-origin'
+                                });
+                                if (!response.ok) throw new Error("Gagal mengunduh file");
+                                
+                                const blob = await response.blob();
+                                const downloadUrl = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.style.display = 'none';
+                                a.href = downloadUrl;
+                                a.download = document.getElementById('modalFileName').textContent;
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(downloadUrl);
+                                
+                                closeModal();
+                                loadFiles(); // refresh count
+                        } catch(e) {
+                                alert(e.message);
+                        } finally {
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                        }
+                }
+
+                // Initial fetch — tunggu auth dulu baru loadFiles
+                checkAuth().then(() => loadFiles());
+
+                // Generate Students
+                const studentGrid = document.getElementById('student-grid');
+                for (let i = 1; i <= 33; i++) {
+                        studentGrid.innerHTML += `
+                        <div class="bg-white rounded-2xl p-6 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all border border-surface-container-high group">
+                                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-105 transition-transform border-4 border-white shadow-sm">
+                                        <span class="material-symbols-outlined text-4xl text-primary/60">person</span>
+                                </div>
+                                <h3 class="font-sans font-semibold text-on-surface mb-1">Siswa ${i}</h3>
+                                <span class="bg-blue-50 text-primary px-3 py-1 rounded-full text-xs font-label font-medium">TJKT 1</span>
+                        </div>`;
+                }
+        </script>
+</body>
+</html>

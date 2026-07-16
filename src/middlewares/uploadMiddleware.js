@@ -2,20 +2,31 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const uploadDir = path.join(__dirname, '../../repository');
+const baseDir = path.join(__dirname, '../../repository');
+
+const CATEGORIES = ['01_Sistem_Operasi', '02_Aplikasi_Utama', '03_Tools_Praktik_TJKT', '04_Video_Tutorial'];
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir);
+    let category = req.body.category;
+    if (!category || !CATEGORIES.includes(category)) {
+      category = '03_Tools_Praktik_TJKT';
+    }
+    const destDir = path.join(baseDir, category);
+    fs.mkdirSync(destDir, { recursive: true });
+    cb(null, destDir);
   },
   filename: (req, file, cb) => {
+    const category = req.body.category && CATEGORIES.includes(req.body.category)
+      ? req.body.category
+      : '03_Tools_Praktik_TJKT';
+    const destDir = path.join(baseDir, category);
     const safeName = file.originalname
       .replace(/[^a-zA-Z0-9._-]/g, '_')
       .replace(/_+/g, '_');
-    // Avoid overwriting existing files
     let finalName = safeName;
     let counter = 1;
-    while (fs.existsSync(path.join(uploadDir, finalName))) {
+    while (fs.existsSync(path.join(destDir, finalName))) {
       const ext = path.extname(safeName);
       const base = path.basename(safeName, ext);
       finalName = `${base}_${counter}${ext}`;

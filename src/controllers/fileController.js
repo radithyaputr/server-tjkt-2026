@@ -3,22 +3,35 @@ const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
 
+const CATEGORIES = ['01_Sistem_Operasi', '02_Aplikasi_Utama', '03_Tools_Praktik_TJKT', '04_Video_Tutorial'];
+
 const uploadFile = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded.' });
     }
 
+    const category = req.body.category && CATEGORIES.includes(req.body.category)
+      ? req.body.category
+      : '03_Tools_Praktik_TJKT';
+
     const file = await File.create({
       filename: req.file.filename,
       originalName: req.file.originalname,
       path: req.file.path,
-      uploadedBy: req.userId // from auth middleware
+      category: category,
+      uploadedBy: req.userId
     });
 
     res.status(201).json({
       message: 'File uploaded successfully',
-      file: { id: file.id, filename: file.filename, originalName: file.originalName, downloadCount: file.downloadCount }
+      file: {
+        id: file.id,
+        filename: file.filename,
+        originalName: file.originalName,
+        category: file.category,
+        downloadCount: file.downloadCount
+      }
     });
   } catch (error) {
     console.error('uploadFile error:', error);
@@ -39,7 +52,7 @@ const getFiles = async (req, res) => {
   }
 };
 
-const UPLOAD_DIR = path.resolve(__dirname, '../../repository');
+const REPO_DIR = path.resolve(__dirname, '../../repository');
 
 const downloadFile = async (req, res) => {
   try {
@@ -50,19 +63,20 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    // Reconstruct safe path to prevent DB-level path traversal
-    const safePath = path.join(UPLOAD_DIR, path.basename(fileRecord.filename));
+    const category = fileRecord.category && CATEGORIES.includes(fileRecord.category)
+      ? fileRecord.category
+      : '03_Tools_Praktik_TJKT';
+    const safePath = path.join(REPO_DIR, category, path.basename(fileRecord.filename));
     const resolvedPath = path.resolve(safePath);
 
-    // Ensure resolved path is still within uploads directory
-    if (!resolvedPath.startsWith(UPLOAD_DIR)) {
+    const allowedBase = path.resolve(REPO_DIR);
+    if (!resolvedPath.startsWith(allowedBase)) {
       return res.status(400).json({ message: 'Invalid file path' });
     }
 
     if (fs.existsSync(resolvedPath)) {
       fileRecord.downloadCount += 1;
       await fileRecord.save();
-
       res.download(resolvedPath, fileRecord.originalName);
     } else {
       res.status(404).json({ message: 'File physically not found on server' });
@@ -82,10 +96,14 @@ const deleteFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    const safePath = path.join(UPLOAD_DIR, path.basename(fileRecord.filename));
+    const category = fileRecord.category && CATEGORIES.includes(fileRecord.category)
+      ? fileRecord.category
+      : '03_Tools_Praktik_TJKT';
+    const safePath = path.join(REPO_DIR, category, path.basename(fileRecord.filename));
     const resolvedPath = path.resolve(safePath);
 
-    if (!resolvedPath.startsWith(UPLOAD_DIR)) {
+    const allowedBase = path.resolve(REPO_DIR);
+    if (!resolvedPath.startsWith(allowedBase)) {
       return res.status(400).json({ message: 'Invalid file path' });
     }
 
