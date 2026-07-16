@@ -37,7 +37,7 @@ services:
       DB_PORT: 3306
       JWT_SECRET: ${JWT_SECRET}
     volumes:
-      - uploaded_files:/app/uploads
+      - /mnt/storage/html/repository:/app/repository
     networks:
       - tjkt-network
 
@@ -65,4 +65,3 @@ networks:
 
 volumes:
   mariadb_data:
-  uploaded_files:
