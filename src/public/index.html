@@ -470,8 +470,8 @@
                                 status.textContent = 'Uploading...';
                                 status.className = 'text-xs text-blue-500 mt-1';
                                 const formData = new FormData();
-                                formData.append('file', file);
                                 formData.append('category', category);
+                                formData.append('file', file);
                                 try {
                                         const res = await fetch('/api/files/upload', {
                                                 method: 'POST',
