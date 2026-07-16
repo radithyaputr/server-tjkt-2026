@@ -116,7 +116,7 @@
                         <nav class="hidden md:flex items-center gap-8 font-label font-medium text-on-surface-variant">
                                 <a href="#beranda" class="hover:text-primary transition-colors">Beranda</a>
                                 <a href="#downloads" class="hover:text-primary transition-colors">Data & Files</a>
-                                <a href="/repository/" target="_blank" class="hover:text-primary transition-colors flex items-center gap-1">
+                                <a id="repoLink" href="/repository/" target="_blank" class="hover:text-primary transition-colors flex items-center gap-1 hidden">
                                         <span class="material-symbols-outlined text-[18px]">folder_open</span> Repository
                                 </a>
                                 <a href="#angkatan" class="hover:text-primary transition-colors">Angkatan 54</a>
@@ -379,6 +379,9 @@
                                         userRole = data.role;
                                         loginBtnText.textContent = "Logout";
                                         loginBtn.querySelector('.material-symbols-outlined').textContent = "logout";
+                                        if (userRole === 'Admin' || userRole === 'Guru') {
+                                                document.getElementById('repoLink').classList.remove('hidden');
+                                        }
                                 }
                         } catch (e) {
                                 isLoggedIn = false;
