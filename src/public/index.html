@@ -99,6 +99,34 @@
                 #downloadModal:not(.hidden) .modal-content, #loginModal:not(.hidden) .modal-content {
                         transform: scale(1);
                 }
+
+                /* Pac-Man */
+                .pacman {
+                        width: 0;
+                        height: 0;
+                        border: 13px solid #f7d51e;
+                        border-radius: 50%;
+                        border-right-color: transparent;
+                        animation: chomp 0.3s linear infinite;
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        z-index: 5;
+                        transition: left 0.3s ease;
+                }
+                @keyframes chomp {
+                        0% { transform: translateY(-50%) rotate(0deg); }
+                        50% { transform: translateY(-50%) rotate(35deg); }
+                        100% { transform: translateY(-50%) rotate(0deg); }
+                }
+
+                .dots-track {
+                        background-image: radial-gradient(circle, var(--color-on-surface-variant) 1.5px, transparent 1.5px);
+                        background-size: 20px 100%;
+                        background-repeat: repeat-x;
+                        background-position: 10px 50%;
+                        pointer-events: none;
+                }
         </style>
 </head>
 
@@ -458,18 +486,26 @@
                                                 <span class="text-xs text-on-surface-variant">PDF, ZIP, RAR, DOCX, ISO, gambar — unlimited size</span>
                                                 <span id="uploadStatus" class="text-xs text-on-surface-variant mt-1"></span>
                                         </label>
-                                        <div id="progressWrapper" class="hidden flex flex-col gap-1">
-                                                <div class="w-full bg-surface-container-high rounded-full h-3 overflow-hidden">
-                                                        <div id="progressBar" class="h-full bg-primary rounded-full transition-all duration-300" style="width:0%"></div>
+                                        <div id="progressWrapper" class="hidden flex flex-col gap-2">
+                                                <div class="relative h-[28px] flex items-center">
+                                                        <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden relative">
+                                                                <div class="absolute inset-0 dots-track"></div>
+                                                                <div id="progressBar" class="h-full bg-primary rounded-full relative transition-all duration-150" style="width:0%"></div>
+                                                        </div>
+                                                        <div id="pacman" class="pacman" style="left:-2px"></div>
                                                 </div>
-                                                <div class="flex justify-between text-xs text-on-surface-variant">
+                                                <div class="flex justify-between items-center text-xs text-on-surface-variant">
                                                         <span id="progressPercent">0%</span>
+                                                        <button id="cancelBtn" class="hidden text-red-500 hover:text-red-600 font-label font-medium items-center gap-0.5 transition-colors">
+                                                                <span class="material-symbols-outlined text-[14px]">close</span> Batal
+                                                        </button>
                                                         <span id="progressETA">--</span>
                                                 </div>
                                         </div>
                                 </div>
                         `;
                         const input = div.querySelector('#fileInput');
+                        let currentXHR = null;
                         input.addEventListener('change', (e) => {
                                 const file = e.target.files[0];
                                 if (!file) return;
@@ -479,23 +515,44 @@
                                 const bar = document.getElementById('progressBar');
                                 const pct = document.getElementById('progressPercent');
                                 const eta = document.getElementById('progressETA');
+                                const pacman = document.getElementById('pacman');
+                                const cancelBtn = document.getElementById('cancelBtn');
 
                                 status.textContent = file.name;
                                 status.className = 'text-xs text-on-surface-variant mt-1';
                                 pw.classList.remove('hidden');
+                                cancelBtn.classList.remove('hidden');
+                                cancelBtn.style.display = 'flex';
+                                bar.style.width = '0%';
+                                pct.textContent = '0%';
+                                eta.textContent = '--';
+                                pacman.style.left = '-2px';
 
                                 const formData = new FormData();
                                 formData.append('category', category);
                                 formData.append('file', file);
 
                                 const xhr = new XMLHttpRequest();
+                                currentXHR = xhr;
                                 let startTime = Date.now();
+
+                                cancelBtn.onclick = () => {
+                                        xhr.abort();
+                                        status.textContent = 'Dibatalkan';
+                                        status.className = 'text-xs text-orange-500 mt-1';
+                                        pw.classList.add('hidden');
+                                        cancelBtn.classList.add('hidden');
+                                        currentXHR = null;
+                                };
 
                                 xhr.upload.onprogress = (ev) => {
                                         if (ev.lengthComputable) {
                                                 const p = Math.round((ev.loaded / ev.total) * 100);
                                                 bar.style.width = p + '%';
                                                 pct.textContent = p + '%';
+
+                                                const trackW = bar.parentElement.offsetWidth - 26;
+                                                pacman.style.left = (p / 100 * trackW) + 'px';
 
                                                 const elapsed = (Date.now() - startTime) / 1000;
                                                 const speed = ev.loaded / elapsed;
@@ -508,13 +565,13 @@
                                 };
 
                                 xhr.onload = () => {
+                                        cancelBtn.classList.add('hidden');
                                         if (xhr.status >= 200 && xhr.status < 300) {
                                                 status.textContent = 'Upload berhasil!';
                                                 status.className = 'text-xs text-green-500 mt-1';
-                                                bar.style.width = '100%';
-                                                pct.textContent = '100%';
-                                                eta.textContent = 'Selesai';
-                                                setTimeout(() => { loadFiles(); }, 500);
+                                                const trackW = bar.parentElement.offsetWidth - 26;
+                                                pacman.style.left = trackW + 'px';
+                                                setTimeout(() => { pw.classList.add('hidden'); loadFiles(); }, 800);
                                         } else {
                                                 try {
                                                         const d = JSON.parse(xhr.responseText);
@@ -522,11 +579,14 @@
                                                 } catch { status.textContent = 'Error: Upload gagal'; }
                                                 status.className = 'text-xs text-red-500 mt-1';
                                         }
+                                        currentXHR = null;
                                 };
 
                                 xhr.onerror = () => {
                                         status.textContent = 'Error: Network error';
                                         status.className = 'text-xs text-red-500 mt-1';
+                                        cancelBtn.classList.add('hidden');
+                                        currentXHR = null;
                                 };
 
                                 xhr.open('POST', '/api/files/upload');
