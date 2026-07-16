@@ -41,11 +41,39 @@ const uploadFile = async (req, res) => {
 
 const getFiles = async (req, res) => {
   try {
-    const files = await File.findAll({
-      include: [{ model: User, attributes: ['username', 'role'] }],
-      attributes: { exclude: ['path'] }
-    });
-    res.status(200).json(files);
+    const result = [];
+
+    for (const cat of CATEGORIES) {
+      const dir = path.join(REPO_DIR, cat);
+      if (!fs.existsSync(dir)) continue;
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        if (!entry.isFile()) continue;
+
+        let record = await File.findOne({ where: { filename: entry.name, category: cat } });
+        if (!record) {
+          record = await File.create({
+            filename: entry.name,
+            originalName: entry.name,
+            path: path.join(REPO_DIR, cat, entry.name),
+            category: cat,
+            uploadedBy: 1,
+          });
+        }
+
+        result.push({
+          id: record.id,
+          filename: record.filename,
+          originalName: record.originalName,
+          category: record.category,
+          downloadCount: record.downloadCount,
+          createdAt: record.createdAt,
+        });
+      }
+    }
+
+    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.status(200).json(result);
   } catch (error) {
     console.error('getFiles error:', error);
     res.status(500).json({ message: 'Failed to retrieve files' });
