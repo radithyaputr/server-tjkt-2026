@@ -437,9 +437,6 @@
                 }
 
                 // Upload logic
-                let uploadInput = null;
-                let uploadLabel = null;
-
                 function createUploadCard() {
                         const div = document.createElement('div');
                         div.className = 'bg-white rounded-2xl p-6 border-2 border-dashed border-primary/40 hover:border-primary transition-colors';
@@ -461,35 +458,80 @@
                                                 <span class="text-xs text-on-surface-variant">PDF, ZIP, RAR, DOCX, ISO, gambar — unlimited size</span>
                                                 <span id="uploadStatus" class="text-xs text-on-surface-variant mt-1"></span>
                                         </label>
+                                        <div id="progressWrapper" class="hidden flex flex-col gap-1">
+                                                <div class="w-full bg-surface-container-high rounded-full h-3 overflow-hidden">
+                                                        <div id="progressBar" class="h-full bg-primary rounded-full transition-all duration-300" style="width:0%"></div>
+                                                </div>
+                                                <div class="flex justify-between text-xs text-on-surface-variant">
+                                                        <span id="progressPercent">0%</span>
+                                                        <span id="progressETA">--</span>
+                                                </div>
+                                        </div>
                                 </div>
                         `;
                         const input = div.querySelector('#fileInput');
-                        const label = div.querySelector('label[for="fileInput"]');
-                        input.addEventListener('change', async (e) => {
+                        input.addEventListener('change', (e) => {
                                 const file = e.target.files[0];
                                 if (!file) return;
                                 const category = document.getElementById('categorySelect').value;
                                 const status = document.getElementById('uploadStatus');
-                                status.textContent = 'Uploading...';
-                                status.className = 'text-xs text-blue-500 mt-1';
+                                const pw = document.getElementById('progressWrapper');
+                                const bar = document.getElementById('progressBar');
+                                const pct = document.getElementById('progressPercent');
+                                const eta = document.getElementById('progressETA');
+
+                                status.textContent = file.name;
+                                status.className = 'text-xs text-on-surface-variant mt-1';
+                                pw.classList.remove('hidden');
+
                                 const formData = new FormData();
                                 formData.append('category', category);
                                 formData.append('file', file);
-                                try {
-                                        const res = await fetch('/api/files/upload', {
-                                                method: 'POST',
-                                                body: formData,
-                                                credentials: 'same-origin'
-                                        });
-                                        const data = await res.json();
-                                        if (!res.ok) throw new Error(data.message || 'Upload gagal');
-                                        status.textContent = 'Upload berhasil!';
-                                        status.className = 'text-xs text-green-500 mt-1';
-                                        setTimeout(() => { loadFiles(); }, 500);
-                                } catch (err) {
-                                        status.textContent = 'Error: ' + err.message;
+
+                                const xhr = new XMLHttpRequest();
+                                let startTime = Date.now();
+
+                                xhr.upload.onprogress = (ev) => {
+                                        if (ev.lengthComputable) {
+                                                const p = Math.round((ev.loaded / ev.total) * 100);
+                                                bar.style.width = p + '%';
+                                                pct.textContent = p + '%';
+
+                                                const elapsed = (Date.now() - startTime) / 1000;
+                                                const speed = ev.loaded / elapsed;
+                                                const remaining = (ev.total - ev.loaded) / speed;
+                                                if (speed > 0 && remaining < 86400) {
+                                                        const s = Math.round(remaining);
+                                                        eta.textContent = s < 60 ? s + 's' : Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+                                                }
+                                        }
+                                };
+
+                                xhr.onload = () => {
+                                        if (xhr.status >= 200 && xhr.status < 300) {
+                                                status.textContent = 'Upload berhasil!';
+                                                status.className = 'text-xs text-green-500 mt-1';
+                                                bar.style.width = '100%';
+                                                pct.textContent = '100%';
+                                                eta.textContent = 'Selesai';
+                                                setTimeout(() => { loadFiles(); }, 500);
+                                        } else {
+                                                try {
+                                                        const d = JSON.parse(xhr.responseText);
+                                                        status.textContent = 'Error: ' + (d.message || 'Upload gagal');
+                                                } catch { status.textContent = 'Error: Upload gagal'; }
+                                                status.className = 'text-xs text-red-500 mt-1';
+                                        }
+                                };
+
+                                xhr.onerror = () => {
+                                        status.textContent = 'Error: Network error';
                                         status.className = 'text-xs text-red-500 mt-1';
-                                }
+                                };
+
+                                xhr.open('POST', '/api/files/upload');
+                                xhr.withCredentials = true;
+                                xhr.send(formData);
                                 input.value = '';
                         });
                         return div;
