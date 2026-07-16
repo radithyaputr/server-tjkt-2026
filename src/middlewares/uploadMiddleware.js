@@ -52,6 +52,8 @@ const MIMETYPE_MAP = {
   '.gif': 'image/gif',
   '.webp': 'image/webp',
   '.iso': ['application/octet-stream', 'application/x-iso9660-image'],
+  '.mp4': ['video/mp4', 'application/octet-stream'],
+  '.mp3': ['audio/mpeg', 'audio/mp3'],
 };
 
 const ALLOWED_EXTENSIONS = Object.keys(MIMETYPE_MAP);
