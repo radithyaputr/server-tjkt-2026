@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repository - TJKT 1</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--color-primary)',
+            'primary-hover': 'var(--color-primary-hover)',
+            surface: 'var(--color-surface)',
+            'surface-container': 'var(--color-surface-container)',
+            'surface-container-high': 'var(--color-surface-container-high)',
+            'on-surface': 'var(--color-on-surface)',
+            'on-surface-variant': 'var(--color-on-surface-variant)',
+            'on-background': 'var(--color-on-background)'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Noto Serif', 'serif'],
+            label: ['Public Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <style>
+    :root {
+      --color-primary: #094cb2;
+      --color-primary-hover: #073d8f;
+      --color-surface: #faf9fa;
+      --color-surface-container: #f0eef1;
+      --color-surface-container-high: #e3dfe5;
+      --color-on-surface: #1c1b1f;
+      --color-on-surface-variant: #49454f;
+      --color-on-background: #1c1b1f;
+    }
+    .dark {
+      --color-primary: #a8c7fa;
+      --color-primary-hover: #d3e3fd;
+      --color-surface: #131314;
+      --color-surface-container: #1e1f20;
+      --color-surface-container-high: #333537;
+      --color-on-surface: #e2e2e2;
+      --color-on-surface-variant: #c4c7c5;
+      --color-on-background: #e2e2e2;
+    }
+    .dark .bg-white:not(.text-primary) {
+      background-color: var(--color-surface-container-high);
+      border-color: #444746;
+      color: var(--color-on-surface);
+    }
+    .dark .bg-blue-50 {
+      background-color: rgba(168, 199, 250, 0.15);
+    }
+    .dark .bg-yellow-50 {
+      background-color: rgba(250, 200, 100, 0.15);
+    }
+    .dark .bg-red-50 {
+      background-color: rgba(250, 100, 100, 0.15);
+    }
+    .dark .bg-purple-50 {
+      background-color: rgba(180, 120, 250, 0.15);
+    }
+    .dark .bg-gray-100 {
+      background-color: rgba(200, 200, 200, 0.15);
+    }
+    .dark .bg-blue-100 {
+      background-color: rgba(100, 150, 250, 0.15);
+    }
+    .dark .border-surface-container-high {
+      border-color: #444746;
+    }
+    #uploadProgress .pacman {
+      width: 0;
+      height: 0;
+      border: 13px solid #f7d51e;
+      border-radius: 50%;
+      border-right-color: transparent;
+      animation: chomp 0.3s linear infinite;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      transition: left 0.3s ease;
+    }
+    @keyframes chomp {
+      0% { transform: translateY(-50%) rotate(0deg); }
+      50% { transform: translateY(-50%) rotate(35deg); }
+      100% { transform: translateY(-50%) rotate(0deg); }
+    }
+    .dots-track {
+      background-image: radial-gradient(circle, var(--color-on-surface-variant) 1.5px, transparent 1.5px);
+      background-size: 20px 100%;
+      background-repeat: repeat-x;
+      background-position: 10px 50%;
+      pointer-events: none;
+    }
+    html { scroll-behavior: smooth; }
+    .toast {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-sans antialiased overflow-x-hidden selection:bg-primary/20">
+
+  <!-- Toast -->
+  <div id="toast" class="toast fixed top-4 right-4 z-[200] bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg font-label font-medium hidden opacity-0 translate-y-[-10px] flex items-center gap-2">
+    <span class="material-symbols-outlined text-[20px]">check_circle</span>
+    <span id="toastMsg">Berhasil</span>
+  </div>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-surface-container-high shadow-sm">
+    <div class="container mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-3xl">dns</span>
+        <span class="font-serif font-bold text-2xl text-primary tracking-tight">TJKT 1</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="font-label font-medium text-on-surface-variant hidden sm:block">Repository</span>
+        <button onclick="toggleTheme()" class="text-on-surface-variant hover:text-primary p-2 rounded-full transition-colors flex items-center justify-center bg-surface-container hover:bg-surface-container-high" title="Toggle Dark Mode">
+          <span id="themeIcon" class="material-symbols-outlined text-[22px]">light_mode</span>
+        </button>
+        <button id="loginBtn" onclick="toggleLogin()" class="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-full font-label font-medium transition-all shadow-md hover:shadow-lg active:scale-95 ml-2">
+          <span class="material-symbols-outlined text-[20px]">login</span>
+          <span id="loginBtnText">Login</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container mx-auto px-6 py-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="font-serif font-bold text-3xl text-on-surface">Repository</h1>
+        <p class="text-on-surface-variant font-sans mt-1">Pusat file dan sumber daya TJKT 1</p>
+      </div>
+      <div class="flex gap-3">
+        <button id="uploadBtn" onclick="document.getElementById('uploadArea').classList.toggle('hidden'); this.classList.toggle('bg-primary'); this.classList.toggle('bg-surface-container');" class="hidden items-center gap-2 px-5 py-2.5 rounded-full font-label font-medium transition-all border border-primary/40 text-primary hover:bg-primary hover:text-white shadow-sm">
+          <span class="material-symbols-outlined text-[20px]">add</span>
+          Upload
+        </button>
+        <a href="/" class="flex items-center gap-2 px-5 py-2.5 rounded-full font-label font-medium transition-all bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-surface-container-high">
+          <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+          Kembali
+        </a>
+      </div>
+    </div>
+
+    <!-- Upload Area -->
+    <div id="uploadArea" class="hidden mb-8 p-6 rounded-2xl border-2 border-dashed border-primary/40 bg-surface-container">
+      <div class="flex flex-col sm:flex-row gap-4 items-end">
+        <div class="flex-1 w-full">
+          <label class="font-label font-medium text-sm text-on-surface-variant mb-2 block">Kategori</label>
+          <select id="catSelect" class="w-full bg-surface border border-surface-container-high text-on-surface rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <option value="01_Sistem_Operasi">Sistem Operasi</option>
+            <option value="02_Aplikasi_Utama">Aplikasi Utama</option>
+            <option value="03_Tools_Praktik_TJKT" selected>Tools Praktik TJKT</option>
+            <option value="04_Video_Tutorial">Video Tutorial</option>
+          </select>
+        </div>
+        <div class="flex-1 w-full">
+          <label class="font-label font-medium text-sm text-on-surface-variant mb-2 block">Pilih File</label>
+          <input type="file" id="fileInput" class="w-full bg-surface border border-surface-container-high text-on-surface rounded-xl py-3 px-4 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:font-label file:font-medium file:cursor-pointer hover:file:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/50" />
+        </div>
+        <button onclick="handleUpload()" class="whitespace-nowrap px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-label font-medium transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+          Upload
+        </button>
+      </div>
+      <div id="uploadProgress" class="hidden mt-4">
+        <div class="relative h-[28px] flex items-center">
+          <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden relative">
+            <div class="absolute inset-0 dots-track"></div>
+            <div id="progressBar" class="h-full bg-primary rounded-full relative transition-all duration-150" style="width:0%"></div>
+          </div>
+          <div id="pacman" class="pacman" style="left:-2px"></div>
+        </div>
+        <div class="flex justify-between items-center text-xs text-on-surface-variant mt-1">
+          <span id="progressPercent">0%</span>
+          <span id="progressETA">--</span>
+        </div>
+      </div>
+      <p id="uploadStatus" class="text-sm mt-2"></p>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+      <div class="relative flex-1">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined">search</span>
+        <input type="text" id="searchInput" oninput="filterFiles()" placeholder="Cari file..." class="w-full bg-surface border border-surface-container-high text-on-surface rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 font-sans">
+      </div>
+      <div class="flex gap-2 flex-wrap" id="filterButtons">
+        <button data-cat="all" class="filter-btn active px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-primary text-white shadow-sm">Semua</button>
+        <button data-cat="01_Sistem_Operasi" class="filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface border border-surface-container-high text-on-surface-variant hover:bg-surface-container">Sistem Operasi</button>
+        <button data-cat="02_Aplikasi_Utama" class="filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface border border-surface-container-high text-on-surface-variant hover:bg-surface-container">Aplikasi</button>
+        <button data-cat="03_Tools_Praktik_TJKT" class="filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface border border-surface-container-high text-on-surface-variant hover:bg-surface-container">Tools TJKT</button>
+        <button data-cat="04_Video_Tutorial" class="filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface border border-surface-container-high text-on-surface-variant hover:bg-surface-container">Video</button>
+      </div>
+    </div>
+
+    <!-- File Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="fileGrid">
+      <div class="col-span-full text-center text-on-surface-variant py-12" id="loading">Memuat file...</div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-surface-container py-6 border-t border-surface-container-high mt-12">
+    <div class="container mx-auto px-6 text-center">
+      <p class="text-on-surface-variant font-sans text-sm">&copy; 2026 TJKT 1 SMKN 1 Kota Bengkulu</p>
+    </div>
+  </footer>
+
+  <script>
+    // Theme
+    const themeIcon = document.getElementById('themeIcon');
+    function updateThemeIcon() {
+      themeIcon.textContent = document.documentElement.classList.contains('dark') ? 'dark_mode' : 'light_mode';
+    }
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      updateThemeIcon();
+    }
+    updateThemeIcon();
+
+    // Auth state
+    let isLoggedIn = false;
+    let userRole = null;
+    const loginBtn = document.getElementById('loginBtn');
+    const loginBtnText = document.getElementById('loginBtnText');
+    const uploadBtn = document.getElementById('uploadBtn');
+
+    async function checkAuth() {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
+        if (res.ok) {
+          const data = await res.json();
+          isLoggedIn = true;
+          userRole = data.role;
+          loginBtnText.textContent = 'Logout';
+          loginBtn.querySelector('.material-symbols-outlined').textContent = 'logout';
+          if (userRole === 'Admin' || userRole === 'Guru') {
+            uploadBtn.classList.remove('hidden');
+            uploadBtn.classList.add('flex');
+          }
+        }
+      } catch (e) {
+        isLoggedIn = false;
+      }
+    }
+
+    function toggleLogin() {
+      if (isLoggedIn) {
+        fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
+          .finally(() => window.location.reload());
+      } else {
+        window.location.href = '/#loginModal';
+      }
+    }
+
+    // Toast
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.classList.remove('hidden', 'opacity-0', 'translate-y-[-10px]');
+      t.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        t.classList.add('opacity-0', 'translate-y-[-10px]');
+        t.classList.remove('opacity-100', 'translate-y-0');
+        setTimeout(() => t.classList.add('hidden'), 300);
+      }, 2500);
+    }
+
+    // Data
+    let allFiles = [];
+    const CATEGORY_LABELS = {
+      '01_Sistem_Operasi': 'Sistem Operasi',
+      '02_Aplikasi_Utama': 'Aplikasi Utama',
+      '03_Tools_Praktik_TJKT': 'Tools Praktik TJKT',
+      '04_Video_Tutorial': 'Video Tutorial'
+    };
+
+    function formatDate(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function getIcon(ext) {
+      if (['zip', 'rar', 'tar', 'gz', 'tgz', '7z'].includes(ext)) return { icon: 'folder_zip', cls: 'bg-yellow-50 text-yellow-600' };
+      if (['exe', 'msi', 'bat', 'sh', 'deb', 'rpm'].includes(ext)) return { icon: 'terminal', cls: 'bg-gray-100 text-gray-700' };
+      if (ext === 'pdf') return { icon: 'picture_as_pdf', cls: 'bg-red-50 text-red-500' };
+      if (['iso', 'img', 'ova', 'ovf'].includes(ext)) return { icon: 'album', cls: 'bg-purple-50 text-purple-600' };
+      if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv'].includes(ext)) return { icon: 'description', cls: 'bg-blue-100 text-blue-700' };
+      if (['mp4', 'webm', 'ogg', 'mkv'].includes(ext)) return { icon: 'play_circle', cls: 'bg-blue-50 text-blue-600' };
+      if (['mp3', 'wav', 'flac'].includes(ext)) return { icon: 'audiotrack', cls: 'bg-green-50 text-green-600' };
+      if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return { icon: 'image', cls: 'bg-pink-50 text-pink-500' };
+      return { icon: 'insert_drive_file', cls: 'bg-blue-50 text-primary' };
+    }
+
+    function renderFiles(files) {
+      const grid = document.getElementById('fileGrid');
+      if (!files.length) {
+        grid.innerHTML = '<div class="col-span-full text-center text-on-surface-variant py-12">Tidak ada file ditemukan</div>';
+        return;
+      }
+      grid.innerHTML = files.map(f => {
+        const ext = (f.originalName || '').split('.').pop().toLowerCase();
+        const { icon, cls } = getIcon(ext);
+        const catLabel = CATEGORY_LABELS[f.category] || f.category;
+        const delBtn = (userRole === 'Admin' || userRole === 'Guru')
+          ? `<button onclick="deleteFile(${f.id})" class="w-full py-2.5 rounded-lg border-2 border-red-400 text-red-500 font-label font-semibold hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-2 mt-2"><span class="material-symbols-outlined text-[18px]">delete</span> Hapus</button>`
+          : '';
+        return `
+          <div class="file-card bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-shadow border border-surface-container-high group flex flex-col h-full" data-cat="${f.category}" data-name="${(f.originalName || '').toLowerCase()}">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="bg-primary/10 text-primary text-xs font-label font-medium px-3 py-1 rounded-full">${catLabel}</span>
+            </div>
+            <div class="w-full h-32 ${cls} rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform shadow-inner">
+              <span class="material-symbols-outlined text-5xl">${icon}</span>
+            </div>
+            <h3 class="font-sans font-semibold text-lg mb-2 text-on-surface truncate" title="${f.originalName}">${f.originalName}</h3>
+            <div class="flex items-center gap-3 text-xs text-on-surface-variant mb-4 flex-grow">
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">download</span> ${f.downloadCount}</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">storage</span> ${f.sizeFormatted || '—'}</span>
+              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> ${formatDate(f.createdAt)}</span>
+            </div>
+            <a href="/api/files/download/${f.id}" class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-label font-semibold hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">download</span> Download
+            </a>
+            ${delBtn}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterFiles() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const activeCat = document.querySelector('.filter-btn.active')?.dataset.cat || 'all';
+      let filtered = allFiles;
+      if (activeCat !== 'all') filtered = filtered.filter(f => f.category === activeCat);
+      if (q) filtered = filtered.filter(f => (f.originalName || '').toLowerCase().includes(q));
+      renderFiles(filtered);
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+          b.className = 'filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface border border-surface-container-high text-on-surface-variant hover:bg-surface-container';
+        });
+        btn.className = 'filter-btn active px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-primary text-white shadow-sm';
+        filterFiles();
+      });
+    });
+
+    // Load files
+    async function loadFiles() {
+      try {
+        const res = await fetch('/api/files');
+        if (!res.ok) throw new Error('Gagal memuat');
+        allFiles = await res.json();
+        filterFiles();
+      } catch (e) {
+        document.getElementById('fileGrid').innerHTML = '<div class="col-span-full text-center text-red-500 py-12">Gagal memuat file</div>';
+      }
+    }
+
+    // Upload
+    async function handleUpload() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) { showToast('Pilih file terlebih dahulu'); return; }
+      const cat = document.getElementById('catSelect').value;
+      const fd = new FormData();
+      fd.append('category', cat);
+      fd.append('file', file);
+
+      const pw = document.getElementById('uploadProgress');
+      const bar = document.getElementById('progressBar');
+      const pct = document.getElementById('progressPercent');
+      const eta = document.getElementById('progressETA');
+      const pacman = document.getElementById('pacman');
+      const status = document.getElementById('uploadStatus');
+
+      pw.classList.remove('hidden');
+      bar.style.width = '0%';
+      pct.textContent = '0%';
+      eta.textContent = '--';
+      pacman.style.left = '-2px';
+      status.textContent = '';
+
+      const xhr = new XMLHttpRequest();
+      const startTime = Date.now();
+
+      xhr.upload.onprogress = (ev) => {
+        if (ev.lengthComputable) {
+          const p = Math.round((ev.loaded / ev.total) * 100);
+          bar.style.width = p + '%';
+          pct.textContent = p + '%';
+          const trackW = bar.parentElement.offsetWidth - 26;
+          pacman.style.left = (p / 100 * trackW) + 'px';
+          const elapsed = (Date.now() - startTime) / 1000;
+          const speed = ev.loaded / elapsed;
+          const remaining = (ev.total - ev.loaded) / speed;
+          if (speed > 0 && remaining < 86400) {
+            const s = Math.round(remaining);
+            eta.textContent = s < 60 ? s + 's' : Math.floor(s / 60) + 'm ' + (s % 60) + 's';
+          }
+        }
+      };
+
+      xhr.onload = () => {
+        pw.classList.add('hidden');
+        if (xhr.status >= 200 && xhr.status < 300) {
+          showToast('Upload berhasil!');
+          document.getElementById('fileInput').value = '';
+          loadFiles();
+        } else {
+          try {
+            const d = JSON.parse(xhr.responseText);
+            status.textContent = 'Error: ' + (d.message || 'Upload gagal');
+          } catch { status.textContent = 'Error: Upload gagal'; }
+          status.className = 'text-sm text-red-500 mt-2';
+        }
+      };
+
+      xhr.onerror = () => { pw.classList.add('hidden'); status.textContent = 'Error: Network error'; status.className = 'text-sm text-red-500 mt-2'; };
+
+      xhr.open('POST', '/api/files/upload');
+      xhr.withCredentials = true;
+      xhr.send(fd);
+    }
+
+    // Delete
+    async function deleteFile(id) {
+      if (!confirm('Hapus file ini?')) return;
+      try {
+        const res = await fetch('/api/files/' + id, { method: 'DELETE', credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Gagal');
+        showToast('File berhasil dihapus');
+        loadFiles();
+      } catch (e) {
+        showToast('Gagal menghapus file');
+      }
+    }
+
+    checkAuth();
+    loadFiles();
+  </script>
+</body>
+</html>

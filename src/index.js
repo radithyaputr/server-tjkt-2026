@@ -56,9 +56,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-// Serve repository locally (meniru Nginx autoindex)
-const serveIndex = require('serve-index');
-app.use('/repository', express.static('repository'), serveIndex('repository', { icons: true }));
+// Serve halaman Repository dengan UI
+app.get('/repo', (req, res) => {
+  res.sendFile(require('path').join(__dirname, 'public', 'repository.html'));
+});
 
 // Serve memory files
 app.use('/memories', express.static('repository/memories'));

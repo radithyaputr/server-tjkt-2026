@@ -139,12 +139,6 @@
                         background-position: 10px 50%;
                         pointer-events: none;
                 }
-                .line-clamp-2 {
-                        display: -webkit-box;
-                        -webkit-line-clamp: 2;
-                        -webkit-box-orient: vertical;
-                        overflow: hidden;
-                }
         </style>
 </head>
 
@@ -154,22 +148,20 @@
         <header
                 class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-surface-container-high shadow-sm">
                 <div class="container mx-auto px-6 h-16 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-full overflow-hidden border-2 border-primary/30 bg-white flex-shrink-0 shadow-sm">
-                                        <img src="./logo-tjkt.webp" alt="TJKT 1" class="w-full h-full object-cover" />
-                                </div>
-                                <span class="font-serif font-bold text-2xl text-primary tracking-tight">TJKT 1</span>
+                        <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-3xl">dns</span>
+                                <span class="font-serif font-bold text-2xl text-primary tracking-tight">TJKT 1 </span>
                         </div>
 
                         <nav class="hidden md:flex items-center gap-8 font-label font-medium text-on-surface-variant">
                                 <a href="#beranda" class="hover:text-primary transition-colors">Beranda</a>
                                 <a href="#downloads" class="hover:text-primary transition-colors">Data & Files</a>
-                                <a id="repoLink" href="/repository/" target="_blank"
+                                <a id="repoLink" href="/repo"
                                         class="hover:text-primary transition-colors flex items-center gap-1 hidden">
                                         <span class="material-symbols-outlined text-[18px]">folder_open</span>
                                         Repository
                                 </a>
-                                <a href="#memories" class="hover:text-primary transition-colors">Galeri Memori</a>
+                                <a href="#angkatan" class="hover:text-primary transition-colors">Angkatan 54</a>
                                 <a href="#credits" class="hover:text-primary transition-colors">Team Pembuat</a>
                         </nav>
 
@@ -271,34 +263,18 @@
                 </div>
         </section>
 
-        <!-- 5. Galeri Memori -->
-        <section id="memories" class="py-24 bg-surface">
+        <!-- 5. Galeri Angkatan 54 -->
+        <section id="angkatan" class="py-24 bg-surface">
                 <div class="container mx-auto px-6">
                         <div class="text-center mb-16">
-                                <h2 class="font-serif font-bold text-4xl text-on-surface mb-4">Galeri Memori</h2>
-                                <p class="text-on-surface-variant font-sans max-w-2xl mx-auto">Kenangan indah selama perjalanan TJKT 1 Angkatan 54.</p>
+                                <h2 class="font-serif font-bold text-4xl text-on-surface mb-4">Galeri Angkatan 54</h2>
+                                <p class="text-on-surface-variant font-sans max-w-2xl mx-auto">33 Siswa/i hebat dari
+                                        TJKT 1 yang selalu solid dan penuh semangat.</p>
                         </div>
 
-                        <!-- Search & Filter -->
-                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
-                                <div class="relative flex-1">
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined">search</span>
-                                        <input type="text" id="memorySearch" placeholder="Cari momen..."
-                                                class="w-full bg-surface-container border border-surface-container-high text-on-surface rounded-xl py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-primary/50 font-sans">
-                                </div>
-                                <div class="flex gap-2 flex-wrap" id="memoryFilterButtons">
-                                        <button data-cat="all" class="mem-filter-btn active px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-primary text-white shadow-sm">Semua</button>
-                                        <button data-cat="MPLS" class="mem-filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface-container border border-surface-container-high text-on-surface-variant hover:bg-surface-container-high">MPLS</button>
-                                        <button data-cat="Bukber" class="mem-filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface-container border border-surface-container-high text-on-surface-variant hover:bg-surface-container-high">Bukber</button>
-                                        <button data-cat="Study_Tour" class="mem-filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface-container border border-surface-container-high text-on-surface-variant hover:bg-surface-container-high">Study Tour</button>
-                                        <button data-cat="Class_Meeting" class="mem-filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface-container border border-surface-container-high text-on-surface-variant hover:bg-surface-container-high">Class Meeting</button>
-                                        <button data-cat="Praktik" class="mem-filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface-container border border-surface-container-high text-on-surface-variant hover:bg-surface-container-high">Praktik</button>
-                                        <button data-cat="Lainnya" class="mem-filter-btn px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-surface-container border border-surface-container-high text-on-surface-variant hover:bg-surface-container-high">Lainnya</button>
-                                </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="memory-grid">
-                                <div class="col-span-full text-center text-on-surface-variant" id="memory-loading">Loading memories...</div>
+                        <div id="student-grid"
+                                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                                <!-- Injected via Vanilla JS -->
                         </div>
                 </div>
         </section>
@@ -466,37 +442,6 @@
                                                 class="material-symbols-outlined text-[20px]">download</span>Mulai
                                         Download</button>
                         </div>
-                </div>
-        </div>
-
-        <!-- Lightbox Modal for Photos -->
-        <div id="lightbox" class="fixed inset-0 z-[200] flex items-center justify-center hidden opacity-0 transition-opacity duration-300 bg-black/90 backdrop-blur-sm">
-                <div class="absolute inset-0" onclick="closeLightbox()"></div>
-                <button onclick="closeLightbox()" class="absolute top-5 right-5 text-white/70 hover:text-white w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all z-10">
-                        <span class="material-symbols-outlined text-3xl">close</span>
-                </button>
-                <button onclick="prevLightbox()" class="absolute left-5 top-1/2 -translate-y-1/2 text-white/70 hover:text-white w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all z-10">
-                        <span class="material-symbols-outlined text-3xl">chevron_left</span>
-                </button>
-                <button onclick="nextLightbox()" class="absolute right-5 top-1/2 -translate-y-1/2 text-white/70 hover:text-white w-12 h-12 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all z-10">
-                        <span class="material-symbols-outlined text-3xl">chevron_right</span>
-                </button>
-                <div class="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center" id="lightboxContainer">
-                        <img id="lightboxImg" src="" alt="" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl transition-transform duration-200" style="transform-origin: center center;" />
-                        <p id="lightboxCaption" class="text-white/80 text-sm mt-4 text-center max-w-xl font-sans"></p>
-                </div>
-                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 border border-white/20 z-10">
-                        <button onclick="zoomLightbox(-0.5)" class="text-white/70 hover:text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 transition-all" title="Perkecil">
-                                <span class="material-symbols-outlined text-2xl">zoom_out</span>
-                        </button>
-                        <span id="lightboxZoomLevel" class="text-white/80 text-xs font-label w-12 text-center">100%</span>
-                        <button onclick="zoomLightbox(0.5)" class="text-white/70 hover:text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 transition-all" title="Perbesar">
-                                <span class="material-symbols-outlined text-2xl">zoom_in</span>
-                        </button>
-                        <span class="w-px h-6 bg-white/20 mx-1"></span>
-                        <button onclick="resetLightboxZoom()" class="text-white/70 hover:text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 transition-all" title="Reset zoom">
-                                <span class="material-symbols-outlined text-2xl">fit_screen</span>
-                        </button>
                 </div>
         </div>
 
@@ -1000,433 +945,33 @@
                         });
                 })();
 
-                // Initial fetch — tunggu auth dulu baru loadFiles & loadMemories
-                checkAuth().then(() => {
-                        loadFiles();
-                        loadMemories();
-                });
+                // Initial fetch — tunggu auth dulu baru loadFiles
+                checkAuth().then(() => loadFiles());
 
-                // === Galeri Memori ===
-                const MEMORY_CATEGORIES = ['MPLS', 'Bukber', 'Study_Tour', 'Class_Meeting', 'Praktik', 'Lainnya'];
-                const CATEGORY_LABELS_MEM = {
-                        'MPLS': 'MPLS', 'Bukber': 'Bukber', 'Study_Tour': 'Study Tour',
-                        'Class_Meeting': 'Class Meeting', 'Praktik': 'Praktik', 'Lainnya': 'Lainnya'
-                };
-
-                let memActiveCategory = 'all';
-
-                function createMemoryUploadCard() {
-                        const div = document.createElement('div');
-                        div.className = 'bg-white rounded-2xl p-6 border-2 border-dashed border-primary/40 hover:border-primary transition-colors';
-                        div.innerHTML = `
-                                <div class="flex flex-col gap-3">
-                                        <div class="flex items-center gap-2 mb-1">
-                                                <span class="material-symbols-outlined text-2xl text-primary">add_circle</span>
-                                                <span class="font-label font-semibold text-primary text-lg">Tambah Memori</span>
-                                        </div>
-                                        <select id="memCategorySelect" class="w-full bg-surface-container border border-surface-container-high text-on-surface rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                                ${MEMORY_CATEGORIES.map(c => `<option value="${c}">${CATEGORY_LABELS_MEM[c]}</option>`).join('')}
-                                        </select>
-                                        <input type="text" id="memCaption" placeholder="Caption / deskripsi (opsional)"
-                                                class="w-full bg-surface-container border border-surface-container-high text-on-surface rounded-lg py-2.5 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50 font-sans">
-                                        <input type="file" id="memFileInput" accept="image/*,video/*" class="hidden" />
-                                        <label for="memFileInput" class="flex flex-col items-center justify-center gap-2 cursor-pointer w-full py-8 border-2 border-dashed border-primary/40 rounded-xl hover:border-primary transition-colors bg-blue-50/50">
-                                                <span class="material-symbols-outlined text-4xl text-primary/70 mb-1">perm_media</span>
-                                                <span class="font-label font-medium text-on-surface text-center">Upload foto/video kenangan</span>
-                                                <span class="text-[11px] text-center text-on-surface-variant max-w-[90%] mt-1 leading-relaxed">JPG, PNG, GIF, WebP, MP4, WebM, OGG</span>
-                                                <span id="memUploadStatus" class="text-sm font-semibold text-primary mt-2"></span>
-                                        </label>
-                                        <div id="memProgressWrapper" class="hidden flex flex-col gap-2">
-                                                <div class="relative h-[28px] flex items-center">
-                                                        <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden relative">
-                                                                <div class="absolute inset-0 dots-track"></div>
-                                                                <div id="memProgressBar" class="h-full bg-primary rounded-full relative transition-all duration-150" style="width:0%"></div>
-                                                        </div>
-                                                        <div id="memPacman" class="pacman" style="left:-2px"></div>
-                                                </div>
-                                                <div class="flex justify-between items-center text-xs text-on-surface-variant">
-                                                        <span id="memProgressPercent">0%</span>
-                                                        <button id="memCancelBtn" class="hidden text-red-500 hover:text-red-600 font-label font-medium items-center gap-0.5 transition-colors">
-                                                                <span class="material-symbols-outlined text-[14px]">close</span> Batal
-                                                        </button>
-                                                        <span id="memProgressETA">--</span>
-                                                </div>
-                                        </div>
+                // Generate Students
+                const studentGrid = document.getElementById('student-grid');
+                const STUDENTS = [
+                        "Adiel Radithya Putra Irwana", "Irsyad Solih", "Muhammad Akbar Dwiman",
+                        "Fachri Majidan Afandi", "Muhammad Althoof Adji Hidayat", "Muhammad Fikri Haikal",
+                        "Yafi Ahmad", "Ahmad Fauzan", "Andika Pratama",
+                        "Anisa Rahmawati", "Budi Santoso", "Dedi Kurniawan",
+                        "Dewi Lestari", "Dimas Ardiansyah", "Eko Prasetyo",
+                        "Fajar Ramadhan", "Fitriani Nurhaliza", "Gilang Permana",
+                        "Hendra Gunawan", "Indah Permata Sari", "Joko Susilo",
+                        "Lilis Suryani", "M. Rizky Fadillah", "M. Ariel Saputra",
+                        "Nanda Pratiwi", "Novi Andriani", "Rafi Abdillah",
+                        "Reza Pahlevi", "Rina Marlina", "Rizky Darmawan",
+                        "Siti Nurjanah", "Tri Wahyudi", "Wawan Setiawan"
+                ];
+                STUDENTS.forEach(name => {
+                        studentGrid.innerHTML += `
+                        <div class="bg-white rounded-2xl p-6 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all border border-surface-container-high group">
+                                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-105 transition-transform border-4 border-white shadow-sm">
+                                        <span class="material-symbols-outlined text-4xl text-primary/60">person</span>
                                 </div>
-                        `;
-                        const input = div.querySelector('#memFileInput');
-                        let currentXHR = null;
-                        input.addEventListener('change', (e) => {
-                                const file = e.target.files[0];
-                                if (!file) return;
-                                const category = document.getElementById('memCategorySelect').value;
-                                const caption = document.getElementById('memCaption').value;
-                                const status = document.getElementById('memUploadStatus');
-                                const pw = document.getElementById('memProgressWrapper');
-                                const bar = document.getElementById('memProgressBar');
-                                const pct = document.getElementById('memProgressPercent');
-                                const eta = document.getElementById('memProgressETA');
-                                const pacman = document.getElementById('memPacman');
-                                const cancelBtn = document.getElementById('memCancelBtn');
-
-                                status.textContent = file.name;
-                                status.className = 'text-xs text-on-surface-variant mt-1';
-                                pw.classList.remove('hidden');
-                                cancelBtn.classList.remove('hidden');
-                                cancelBtn.style.display = 'flex';
-                                bar.style.width = '0%';
-                                pct.textContent = '0%';
-                                eta.textContent = '--';
-                                pacman.style.left = '-2px';
-
-                                const formData = new FormData();
-                                formData.append('category', category);
-                                formData.append('caption', caption);
-                                formData.append('file', file);
-
-                                const xhr = new XMLHttpRequest();
-                                currentXHR = xhr;
-                                let startTime = Date.now();
-
-                                cancelBtn.onclick = () => {
-                                        xhr.abort();
-                                        status.textContent = 'Dibatalkan';
-                                        status.className = 'text-xs text-orange-500 mt-1';
-                                        pw.classList.add('hidden');
-                                        cancelBtn.classList.add('hidden');
-                                        currentXHR = null;
-                                };
-
-                                xhr.upload.onprogress = (ev) => {
-                                        if (ev.lengthComputable) {
-                                                const p = Math.round((ev.loaded / ev.total) * 100);
-                                                bar.style.width = p + '%';
-                                                pct.textContent = p + '%';
-                                                const trackW = bar.parentElement.offsetWidth - 26;
-                                                pacman.style.left = (p / 100 * trackW) + 'px';
-                                                const elapsed = (Date.now() - startTime) / 1000;
-                                                const speed = ev.loaded / elapsed;
-                                                const remaining = (ev.total - ev.loaded) / speed;
-                                                if (speed > 0 && remaining < 86400) {
-                                                        const s = Math.round(remaining);
-                                                        eta.textContent = s < 60 ? s + 's' : Math.floor(s / 60) + 'm ' + (s % 60) + 's';
-                                                }
-                                        }
-                                };
-
-                                xhr.onload = () => {
-                                        cancelBtn.classList.add('hidden');
-                                        if (xhr.status >= 200 && xhr.status < 300) {
-                                                status.textContent = 'Upload berhasil!';
-                                                status.className = 'text-xs text-green-500 mt-1';
-                                                const trackW = bar.parentElement.offsetWidth - 26;
-                                                pacman.style.left = trackW + 'px';
-                                                setTimeout(() => { pw.classList.add('hidden'); loadMemories(); }, 800);
-                                        } else {
-                                                try {
-                                                        const d = JSON.parse(xhr.responseText);
-                                                        status.textContent = 'Error: ' + (d.message || 'Upload gagal');
-                                                } catch { status.textContent = 'Error: Upload gagal'; }
-                                                status.className = 'text-xs text-red-500 mt-1';
-                                        }
-                                        currentXHR = null;
-                                };
-
-                                xhr.onerror = () => {
-                                        status.textContent = 'Error: Network error';
-                                        status.className = 'text-xs text-red-500 mt-1';
-                                        cancelBtn.classList.add('hidden');
-                                        currentXHR = null;
-                                };
-
-                                xhr.open('POST', '/api/memories/upload');
-                                xhr.withCredentials = true;
-                                xhr.send(formData);
-                                input.value = '';
-                        });
-                        return div;
-                }
-
-                let lightboxItems = [];
-                let lightboxIndex = 0;
-
-                function openLightbox(index) {
-                        const item = lightboxItems[index];
-                        if (!item || item.isVideo) return;
-                        lightboxIndex = index;
-                        lightboxZoom = 1;
-                        lbPanX = 0; lbPanY = 0;
-                        document.getElementById('lightboxZoomLevel').textContent = '100%';
-                        document.getElementById('lightboxImg').src = item.url;
-                        document.getElementById('lightboxImg').alt = item.caption || '';
-                        document.getElementById('lightboxCaption').textContent = item.caption || '';
-                        applyLbTransform();
-                        const modal = document.getElementById('lightbox');
-                        modal.classList.remove('hidden');
-                        void modal.offsetWidth;
-                        modal.classList.remove('opacity-0');
-                        document.body.style.overflow = 'hidden';
-                }
-
-                let lightboxZoom = 1;
-                let lbPanX = 0, lbPanY = 0;
-                let lbDragging = false;
-                let lbStartX, lbStartY, lbPanStartX, lbPanStartY;
-
-                function applyLbTransform() {
-                        const img = document.getElementById('lightboxImg');
-                        if (lightboxZoom > 1) {
-                                img.style.cursor = 'grab';
-                        } else {
-                                img.style.cursor = '';
-                                lbPanX = 0; lbPanY = 0;
-                        }
-                        img.style.transform = `translate(${lbPanX}px, ${lbPanY}px) scale(${lightboxZoom})`;
-                }
-
-                function closeLightbox() {
-                        const modal = document.getElementById('lightbox');
-                        modal.classList.add('opacity-0');
-                        setTimeout(() => {
-                                modal.classList.add('hidden');
-                                document.body.style.overflow = '';
-                                resetLightboxZoom();
-                        }, 300);
-                }
-
-                function zoomLightbox(delta) {
-                        lightboxZoom = Math.max(0.5, Math.min(5, lightboxZoom + delta));
-                        document.getElementById('lightboxZoomLevel').textContent = Math.round(lightboxZoom * 100) + '%';
-                        applyLbTransform();
-                }
-
-                function resetLightboxZoom() {
-                        lightboxZoom = 1;
-                        lbPanX = 0; lbPanY = 0;
-                        applyLbTransform();
-                        document.getElementById('lightboxZoomLevel').textContent = '100%';
-                }
-
-                function prevLightbox() {
-                        if (lightboxItems.length === 0) return;
-                        let idx = lightboxIndex;
-                        do {
-                                idx = (idx - 1 + lightboxItems.length) % lightboxItems.length;
-                        } while (lightboxItems[idx].isVideo && idx !== lightboxIndex);
-                        if (!lightboxItems[idx].isVideo) openLightbox(idx);
-                }
-
-                function nextLightbox() {
-                        if (lightboxItems.length === 0) return;
-                        let idx = lightboxIndex;
-                        do {
-                                idx = (idx + 1) % lightboxItems.length;
-                        } while (lightboxItems[idx].isVideo && idx !== lightboxIndex);
-                        if (!lightboxItems[idx].isVideo) openLightbox(idx);
-                }
-
-                function createMemoryCard(mem, index) {
-                        const card = document.createElement('div');
-                        card.className = 'memory-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-surface-container-high group';
-                        card.dataset.category = mem.category;
-                        card.dataset.name = (mem.originalName + ' ' + (mem.caption || '')).toLowerCase();
-
-                        const ext = mem.originalName.split('.').pop().toLowerCase();
-                        const fileUrl = `/memories/${mem.category}/${encodeURIComponent(mem.filename)}`;
-                        const isVideo = ['mp4', 'webm', 'ogg'].includes(ext);
-
-                        let mediaHTML = '';
-                        if (isVideo) {
-                                mediaHTML = `<video class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer" src="${fileUrl}" preload="metadata" playsinline controls></video>
-                                        <div class="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/30 transition-opacity cursor-pointer video-play-btn">
-                                                <span class="material-symbols-outlined text-6xl text-white drop-shadow-lg">play_circle</span>
-                                        </div>`;
-                        } else {
-                                mediaHTML = `<img class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer" src="${fileUrl}" alt="${mem.originalName}" loading="lazy">`;
-                        }
-
-                        const delBtn = isAdmin()
-                                ? `<button onclick="deleteMemory(${mem.id})" class="absolute top-3 right-3 bg-black/50 hover:bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100">
-                                        <span class="material-symbols-outlined text-[18px]">delete</span>
-                                   </button>`
-                                : '';
-
-                        card.innerHTML = `
-                                <div class="relative overflow-hidden">
-                                        ${mediaHTML}
-                                        ${delBtn}
-                                        <span class="absolute top-3 left-3 bg-black/50 text-white text-[11px] font-label font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">${CATEGORY_LABELS_MEM[mem.category] || mem.category}</span>
-                                </div>
-                                <div class="p-4">
-                                        ${mem.caption ? `<p class="text-sm text-on-surface font-sans mb-1 line-clamp-2">${mem.caption}</p>` : ''}
-                                        <p class="text-[11px] text-on-surface-variant font-sans">${formatDate(mem.createdAt)}</p>
-                                </div>
-                        `;
-
-                        const video = card.querySelector('video');
-                        const playBtn = card.querySelector('.video-play-btn');
-                        if (video && playBtn) {
-                                function hideOverlay() { playBtn.style.opacity = '0'; playBtn.style.pointerEvents = 'none'; }
-                                function showOverlay() { playBtn.style.opacity = ''; playBtn.style.pointerEvents = ''; }
-                                playBtn.addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        if (video.paused) {
-                                                video.play();
-                                        } else {
-                                                video.pause();
-                                        }
-                                });
-                                video.addEventListener('play', () => {
-                                        hideOverlay();
-                                });
-                                video.addEventListener('pause', () => {
-                                        if (video.currentTime > 0) showOverlay();
-                                });
-                                video.addEventListener('click', () => {
-                                        if (video.paused) { video.play(); }
-                                });
-                                video.addEventListener('ended', () => {
-                                        showOverlay();
-                                });
-                        }
-
-                        const img = card.querySelector('img');
-                        if (img) {
-                                img.addEventListener('click', () => openLightbox(index));
-                        }
-
-                        return card;
-                }
-
-                async function deleteMemory(id) {
-                        if (!confirm('Hapus memori ini?')) return;
-                        try {
-                                const res = await fetch('/api/memories/' + id, { method: 'DELETE', credentials: 'same-origin' });
-                                if (!res.ok) throw new Error('Gagal menghapus');
-                                loadMemories();
-                        } catch (e) { alert(e.message); }
-                }
-
-                async function loadMemories() {
-                        const grid = document.getElementById('memory-grid');
-                        try {
-                                const res = await fetch('/api/memories');
-                                if (!res.ok) throw new Error('Failed');
-                                const memories = await res.json();
-                                grid.innerHTML = '';
-                                lightboxItems = memories.map(m => ({
-                                        url: `/memories/${m.category}/${encodeURIComponent(m.filename)}`,
-                                        caption: m.caption || '',
-                                        isVideo: ['mp4', 'webm', 'ogg'].includes(m.originalName.split('.').pop().toLowerCase())
-                                }));
-                                if (isAdmin()) grid.appendChild(createMemoryUploadCard());
-                                if (memories.length === 0 && !isAdmin()) {
-                                        grid.innerHTML = '<div class="col-span-full text-center text-on-surface-variant">Belum ada memori.</div>';
-                                        return;
-                                }
-                                memories.forEach((m, i) => grid.appendChild(createMemoryCard(m, i)));
-                                applyMemFilter();
-                        } catch (e) {
-                                grid.innerHTML = '<div class="col-span-full text-center text-red-500">Gagal memuat memori.</div>';
-                        }
-                }
-
-                function applyMemFilter() {
-                        const q = document.getElementById('memorySearch').value.toLowerCase().trim();
-                        document.querySelectorAll('#memory-grid > .memory-card').forEach(card => {
-                                const matchCat = memActiveCategory === 'all' || card.dataset.category === memActiveCategory;
-                                const matchSearch = !q || card.dataset.name.includes(q);
-                                card.style.display = (matchCat && matchSearch) ? '' : 'none';
-                        });
-                }
-
-                document.addEventListener('keydown', (e) => {
-                        const lb = document.getElementById('lightbox');
-                        if (lb.classList.contains('hidden')) return;
-                        if (e.key === 'Escape') closeLightbox();
-                        if (e.key === 'ArrowLeft') prevLightbox();
-                        if (e.key === 'ArrowRight') nextLightbox();
-                        if (e.key === 'Equal' || e.key === 'Add') zoomLightbox(0.5);
-                        if (e.key === 'Minus' || e.key === 'Subtract') zoomLightbox(-0.5);
-                        if (e.key === 'Digit0') resetLightboxZoom();
-                });
-
-                const lbContainer = document.getElementById('lightboxContainer');
-                lbContainer.addEventListener('wheel', (e) => {
-                        if (lightboxZoom >= 0.5) {
-                                e.preventDefault();
-                                zoomLightbox(e.deltaY > 0 ? -0.5 : 0.5);
-                        }
-                }, { passive: false });
-
-                document.getElementById('lightboxImg').addEventListener('dblclick', () => {
-                        if (lightboxZoom === 1) zoomLightbox(1.5);
-                        else resetLightboxZoom();
-                });
-
-                // Pan drag untuk foto yang di-zoom (mouse + touch)
-                function lbPointerDown(px, py) {
-                        if (lightboxZoom <= 1) return;
-                        lbDragging = true;
-                        lbStartX = px;
-                        lbStartY = py;
-                        lbPanStartX = lbPanX;
-                        lbPanStartY = lbPanY;
-                        document.getElementById('lightboxImg').style.cursor = 'grabbing';
-                }
-                function lbPointerMove(px, py) {
-                        if (!lbDragging) return;
-                        lbPanX = lbPanStartX + (px - lbStartX);
-                        lbPanY = lbPanStartY + (py - lbStartY);
-                        applyLbTransform();
-                }
-                function lbPointerUp() {
-                        lbDragging = false;
-                        document.getElementById('lightboxImg').style.cursor = lightboxZoom > 1 ? 'grab' : '';
-                }
-
-                lbContainer.addEventListener('mousedown', (e) => { lbPointerDown(e.clientX, e.clientY); });
-                document.addEventListener('mousemove', (e) => { lbPointerMove(e.clientX, e.clientY); });
-                document.addEventListener('mouseup', lbPointerUp);
-
-                let lastPinchDist = 0;
-                lbContainer.addEventListener('touchstart', (e) => {
-                        if (e.touches.length === 1) lbPointerDown(e.touches[0].clientX, e.touches[0].clientY);
-                        if (e.touches.length === 2) {
-                                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                                lastPinchDist = Math.sqrt(dx*dx + dy*dy);
-                        }
-                }, { passive: true });
-                lbContainer.addEventListener('touchmove', (e) => {
-                        if (e.touches.length === 1) lbPointerMove(e.touches[0].clientX, e.touches[0].clientY);
-                        if (e.touches.length === 2) {
-                                e.preventDefault();
-                                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                                const dist = Math.sqrt(dx*dx + dy*dy);
-                                const delta = dist - lastPinchDist;
-                                if (Math.abs(delta) > 10) {
-                                        zoomLightbox(delta > 0 ? 0.3 : -0.3);
-                                        lastPinchDist = dist;
-                                }
-                        }
-                }, { passive: false });
-                lbContainer.addEventListener('touchend', (e) => {
-                        if (e.touches.length < 2) lbPointerUp();
-                }, { passive: true });
-
-                document.getElementById('memorySearch').addEventListener('input', applyMemFilter);
-                document.getElementById('memoryFilterButtons').addEventListener('click', (e) => {
-                        const btn = e.target.closest('.mem-filter-btn');
-                        if (!btn) return;
-                        document.querySelectorAll('.mem-filter-btn').forEach(b => {
-                                b.className = b.className.replace(/bg-primary text-white/g, 'bg-surface-container border border-surface-container-high text-on-surface-variant');
-                                b.classList.remove('active');
-                        });
-                        btn.className = 'mem-filter-btn active px-4 py-2.5 rounded-xl font-label font-medium text-sm transition-all bg-primary text-white shadow-sm';
-                        memActiveCategory = btn.dataset.cat;
-                        applyMemFilter();
+                                <h3 class="font-sans font-semibold text-on-surface mb-1">${name}</h3>
+                                <span class="bg-blue-50 text-primary px-3 py-1 rounded-full text-xs font-label font-medium">TJKT 1</span>
+                        </div>`;
                 });
         </script>
 </body>
