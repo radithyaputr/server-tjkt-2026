@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apk add --no-cache tzdata wget
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --only=production
 
 COPY . .
 
