@@ -56,7 +56,22 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-// 404 Handler
+// Serve repository locally (meniru Nginx autoindex)
+const serveIndex = require('serve-index');
+app.use('/repository', express.static('repository'), serveIndex('repository', { icons: true }));
+
+// Serve memory files
+app.use('/memories', express.static('repository/memories'));
+
+// SPA Catch-all route (Express 5 syntax fix)
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/api')) {
+    return next();
+  }
+  res.sendFile(require('path').join(__dirname, 'public', 'index.html'));
+});
+
+// 404 Handler (mostly for API routes now)
 app.use((req, res, next) => {
   res.status(404).json({
     error: 'Not Found',

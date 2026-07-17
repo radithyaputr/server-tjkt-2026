@@ -3,7 +3,16 @@ const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
 
+function formatSize(bytes) {
+  if (bytes === 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const k = 1024;
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + units[i];
+}
+
 const CATEGORIES = ['01_Sistem_Operasi', '02_Aplikasi_Utama', '03_Tools_Praktik_TJKT', '04_Video_Tutorial'];
+const REPO_DIR = path.resolve(__dirname, '../../repository');
 
 const uploadFile = async (req, res) => {
   try {
@@ -61,12 +70,18 @@ const getFiles = async (req, res) => {
           });
         }
 
+        const filePath = path.join(REPO_DIR, cat, entry.name);
+        let fileSize = 0;
+        try { fileSize = fs.statSync(filePath).size; } catch (e) { fileSize = 0; }
+
         result.push({
           id: record.id,
           filename: record.filename,
           originalName: record.originalName,
           category: record.category,
           downloadCount: record.downloadCount,
+          size: fileSize,
+          sizeFormatted: formatSize(fileSize),
           createdAt: record.createdAt,
         });
       }
@@ -79,8 +94,6 @@ const getFiles = async (req, res) => {
     res.status(500).json({ message: 'Failed to retrieve files' });
   }
 };
-
-const REPO_DIR = path.resolve(__dirname, '../../repository');
 
 const downloadFile = async (req, res) => {
   try {

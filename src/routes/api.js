@@ -3,8 +3,10 @@ const router = express.Router();
 
 const authController = require('../controllers/authController');
 const fileController = require('../controllers/fileController');
+const memoryController = require('../controllers/memoryController');
 const { verifyToken, isAdminOrGuru } = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
+const uploadMemory = require('../middlewares/uploadMemoryMiddleware');
 
 // Auth Routes
 router.post('/auth/register', authController.register);
@@ -31,5 +33,15 @@ router.post('/files/upload', [verifyToken, isAdminOrGuru], (req, res, next) => {
 }, fileController.uploadFile);
 
 router.delete('/files/:id', [verifyToken, isAdminOrGuru], fileController.deleteFile);
+
+// Memory Routes (Gallery)
+router.get('/memories', memoryController.getMemories);
+router.post('/memories/upload', [verifyToken, isAdminOrGuru], (req, res, next) => {
+  uploadMemory.single('file')(req, res, (err) => {
+    if (err) return res.status(400).json({ message: err.message || 'Upload failed.' });
+    next();
+  });
+}, memoryController.uploadMemory);
+router.delete('/memories/:id', [verifyToken, isAdminOrGuru], memoryController.deleteMemory);
 
 module.exports = router;

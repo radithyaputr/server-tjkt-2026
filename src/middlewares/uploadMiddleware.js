@@ -54,6 +54,22 @@ const MIMETYPE_MAP = {
   '.iso': ['application/octet-stream', 'application/x-iso9660-image'],
   '.mp4': ['video/mp4', 'application/octet-stream'],
   '.mp3': ['audio/mpeg', 'audio/mp3'],
+  // New TJKT specific extensions
+  '.exe': ['application/x-msdownload', 'application/octet-stream', 'application/x-ms-dos-executable', 'application/x-dosexec'],
+  '.msi': ['application/x-msi', 'application/octet-stream'],
+  '.ova': ['application/x-virtualbox-ova', 'application/octet-stream'],
+  '.ovf': ['application/x-virtualbox-ovf', 'application/octet-stream'],
+  '.tar': ['application/x-tar', 'application/octet-stream'],
+  '.gz': ['application/gzip', 'application/x-gzip', 'application/octet-stream'],
+  '.tgz': ['application/gzip', 'application/x-gzip', 'application/octet-stream'],
+  '.deb': ['application/vnd.debian.binary-package', 'application/x-debian-package', 'application/octet-stream'],
+  '.rpm': ['application/x-rpm', 'application/x-redhat-package-manager', 'application/octet-stream'],
+  '.sh': ['application/x-sh', 'text/x-shellscript', 'application/octet-stream', 'text/plain'],
+  '.bat': ['application/x-msdos-program', 'application/octet-stream', 'text/plain'],
+  '.ps1': ['application/octet-stream', 'text/plain'],
+  '.img': ['application/octet-stream', 'application/x-raw-disk-image'],
+  '.txt': 'text/plain',
+  '.csv': ['text/csv', 'application/vnd.ms-excel'],
 };
 
 const ALLOWED_EXTENSIONS = Object.keys(MIMETYPE_MAP);
