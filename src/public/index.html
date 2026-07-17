@@ -139,6 +139,19 @@
                         background-position: 10px 50%;
                         pointer-events: none;
                 }
+                .line-clamp-2 {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                }
+                /* Lightbox */
+                #viewerModal {
+                        transition: opacity 0.3s ease;
+                }
+                #viewerImage {
+                        transition: transform 0.15s ease;
+                }
         </style>
 </head>
 
@@ -149,8 +162,7 @@
                 class="sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-surface-container-high shadow-sm">
                 <div class="container mx-auto px-6 h-16 flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary text-3xl">dns</span>
-                                <span class="font-serif font-bold text-2xl text-primary tracking-tight">TJKT 1 </span>
+                                <img src="logo-tjkt.webp" alt="TJKT 1" class="h-8">
                         </div>
 
                         <nav class="hidden md:flex items-center gap-8 font-label font-medium text-on-surface-variant">
@@ -161,7 +173,7 @@
                                         <span class="material-symbols-outlined text-[18px]">folder_open</span>
                                         Repository
                                 </a>
-                                <a href="#angkatan" class="hover:text-primary transition-colors">Angkatan 54</a>
+                                <a href="#memori" class="hover:text-primary transition-colors">Memori</a>
                                 <a href="#credits" class="hover:text-primary transition-colors">Team Pembuat</a>
                         </nav>
 
@@ -263,21 +275,62 @@
                 </div>
         </section>
 
-        <!-- 5. Galeri Angkatan 54 -->
-        <section id="angkatan" class="py-24 bg-surface">
+        <!-- 5. Memori Kelas (Foto & Video) -->
+        <section id="memori" class="py-24 bg-surface">
                 <div class="container mx-auto px-6">
                         <div class="text-center mb-16">
-                                <h2 class="font-serif font-bold text-4xl text-on-surface mb-4">Galeri Angkatan 54</h2>
-                                <p class="text-on-surface-variant font-sans max-w-2xl mx-auto">33 Siswa/i hebat dari
-                                        TJKT 1 yang selalu solid dan penuh semangat.</p>
+                                <h2 class="font-serif font-bold text-4xl text-on-surface mb-4">Memori Kelas</h2>
+                                <p class="text-on-surface-variant font-sans max-w-2xl mx-auto">Dokumentasi dan kenangan TJKT 1 selama perjalanan di SMKN 1 Kota Bengkulu.</p>
+                                <button id="memoryUploadBtn" onclick="document.getElementById('memoryUpload').classList.toggle('hidden'); this.classList.toggle('bg-primary'); this.classList.toggle('bg-surface-container');"
+                                        class="hidden items-center gap-2 px-5 py-2.5 rounded-full font-label font-medium transition-all border border-primary/40 text-primary hover:bg-primary hover:text-white shadow-sm mx-auto mt-4">
+                                        <span class="material-symbols-outlined text-[20px]">add_a_photo</span>
+                                        Tambah Media
+                                </button>
                         </div>
 
-                        <div id="student-grid"
-                                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-                                <!-- Injected via Vanilla JS -->
+                        <div id="memoryUpload" class="hidden mb-8 p-6 rounded-2xl border-2 border-dashed border-primary/40 bg-surface-container max-w-lg mx-auto">
+                                <div class="flex flex-col gap-4">
+                                        <select id="memoryCat" class="w-full bg-surface border border-surface-container-high text-on-surface rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                                <option value="MPLS">MPLS</option>
+                                                <option value="Bukber">Bukber</option>
+                                                <option value="Study_Tour">Study Tour</option>
+                                                <option value="Class_Meeting">Class Meeting</option>
+                                                <option value="Praktik">Praktik</option>
+                                                <option value="Lainnya">Lainnya</option>
+                                        </select>
+                                        <input type="text" id="memoryCaption" placeholder="Caption / keterangan (opsional)"
+                                                class="w-full bg-surface border border-surface-container-high text-on-surface rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <input type="file" id="memoryFile" accept="image/*,video/mp4,video/webm,video/ogg"
+                                                class="w-full bg-surface border border-surface-container-high text-on-surface rounded-xl py-3 px-4 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:font-label file:font-medium file:cursor-pointer hover:file:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <button onclick="uploadMemory()" class="w-full px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl font-label font-medium transition-all shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                                <span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+                                                Upload
+                                        </button>
+                                        <p id="memoryUploadStatus" class="text-sm text-center"></p>
+                                </div>
+                        </div>
+
+                        <div id="memory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                <!-- Injected -->
                         </div>
                 </div>
         </section>
+
+        <!-- Lightbox / Viewer Modal -->
+        <div id="viewerModal" class="fixed inset-0 z-[200] hidden opacity-0 transition-opacity duration-300" onclick="closeViewer()">
+                <div class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
+                <div class="absolute top-4 right-4 z-10 flex gap-2">
+                        <button onclick="zoomOut()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-colors" title="Zoom Out"><span class="material-symbols-outlined">zoom_out</span></button>
+                        <button onclick="zoomIn()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-colors" title="Zoom In"><span class="material-symbols-outlined">zoom_in</span></button>
+                        <button onclick="resetZoom()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-colors" title="Reset"><span class="material-symbols-outlined">aspect_ratio</span></button>
+                        <button onclick="closeViewer()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-colors" title="Tutup"><span class="material-symbols-outlined">close</span></button>
+                </div>
+                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm font-label z-10" id="viewerCaption"></div>
+                <div class="absolute inset-0 flex items-center justify-center p-4" id="viewerContainer">
+                        <img id="viewerImage" class="max-w-full max-h-full object-contain select-none cursor-grab active:cursor-grabbing transition-transform duration-200" style="display:none;" ondblclick="toggleZoom()" draggable="false">
+                        <video id="viewerVideo" class="max-w-full max-h-full" style="display:none;" controls autoplay playsinline webkit-playsinline></video>
+                </div>
+        </div>
 
         <!-- 6. Team Pembuat (Credits) -->
         <section id="credits" class="py-24 relative overflow-hidden">
@@ -945,34 +998,205 @@
                         });
                 })();
 
-                // Initial fetch — tunggu auth dulu baru loadFiles
-                checkAuth().then(() => loadFiles());
-
-                // Generate Students
-                const studentGrid = document.getElementById('student-grid');
-                const STUDENTS = [
-                        "Adiel Radithya Putra Irwana", "Irsyad Solih", "Muhammad Akbar Dwiman",
-                        "Fachri Majidan Afandi", "Muhammad Althoof Adji Hidayat", "Muhammad Fikri Haikal",
-                        "Yafi Ahmad", "Ahmad Fauzan", "Andika Pratama",
-                        "Anisa Rahmawati", "Budi Santoso", "Dedi Kurniawan",
-                        "Dewi Lestari", "Dimas Ardiansyah", "Eko Prasetyo",
-                        "Fajar Ramadhan", "Fitriani Nurhaliza", "Gilang Permana",
-                        "Hendra Gunawan", "Indah Permata Sari", "Joko Susilo",
-                        "Lilis Suryani", "M. Rizky Fadillah", "M. Ariel Saputra",
-                        "Nanda Pratiwi", "Novi Andriani", "Rafi Abdillah",
-                        "Reza Pahlevi", "Rina Marlina", "Rizky Darmawan",
-                        "Siti Nurjanah", "Tri Wahyudi", "Wawan Setiawan"
-                ];
-                STUDENTS.forEach(name => {
-                        studentGrid.innerHTML += `
-                        <div class="bg-white rounded-2xl p-6 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all border border-surface-container-high group">
-                                <div class="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-105 transition-transform border-4 border-white shadow-sm">
-                                        <span class="material-symbols-outlined text-4xl text-primary/60">person</span>
-                                </div>
-                                <h3 class="font-sans font-semibold text-on-surface mb-1">${name}</h3>
-                                <span class="bg-blue-50 text-primary px-3 py-1 rounded-full text-xs font-label font-medium">TJKT 1</span>
-                        </div>`;
+                // Initial fetch — tunggu auth dulu baru loadFiles & memories
+                checkAuth().then(() => {
+                        loadFiles();
+                        loadMemories();
+                        if (userRole === 'Admin' || userRole === 'Guru') {
+                                document.getElementById('memoryUploadBtn').classList.remove('hidden');
+                                document.getElementById('memoryUploadBtn').classList.add('flex');
+                        }
                 });
+
+                // ===== Memories Gallery =====
+                const memoryGrid = document.getElementById('memory-grid');
+                const isVideo = f => /\.(mp4|webm|ogg)$/i.test(f.filename);
+
+                async function loadMemories() {
+                        try {
+                                const res = await fetch('/api/memories');
+                                if (!res.ok) throw new Error('Gagal');
+                                const memories = await res.json();
+                                if (!memories.length) {
+                                        memoryGrid.innerHTML = '<div class="col-span-full text-center text-on-surface-variant py-12">Belum ada memori.</div>';
+                                        return;
+                                }
+                                memoryGrid.innerHTML = memories.map(m => {
+                                        const url = `/memories/${m.category}/${encodeURIComponent(m.filename)}`;
+                                        const catLabel = m.category.replace(/_/g, ' ');
+                                        const isVid = isVideo(m);
+                                        const isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.filename);
+                                        let preview;
+                                        if (isVid) {
+                                                preview = `
+                                                        <div class="aspect-[4/3] overflow-hidden bg-black relative group cursor-pointer" onclick="openViewer('${url}','video','${m.caption ? m.caption.replace(/'/g, "\\'") : ''}')">
+                                                                <video class="w-full h-full object-cover" src="${url}" preload="metadata" muted></video>
+                                                                <div class="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors">
+                                                                        <span class="material-symbols-outlined text-6xl text-white/90 drop-shadow-lg">play_circle</span>
+                                                                </div>
+                                                        </div>`;
+                                        } else {
+                                                preview = `
+                                                        <div class="aspect-[4/3] overflow-hidden bg-surface-container-high cursor-pointer group" onclick="openViewer('${url}','image','${m.caption ? m.caption.replace(/'/g, "\\'") : ''}')">
+                                                                <img src="${url}" alt="${m.originalName}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                                        </div>`;
+                                        }
+                                        return `
+                                        <div class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-surface-container-high">
+                                                ${preview}
+                                                <div class="p-3">
+                                                        <span class="bg-primary/10 text-primary text-xs font-label font-medium px-2.5 py-0.5 rounded-full">${catLabel}</span>
+                                                        ${m.caption ? `<p class="text-on-surface font-sans mt-1.5 text-sm leading-relaxed line-clamp-2">${m.caption}</p>` : ''}
+                                                        <div class="flex items-center justify-between mt-2 text-xs text-on-surface-variant">
+                                                                <span>${new Date(m.createdAt).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' })}</span>
+                                                                ${(userRole === 'Admin' || userRole === 'Guru') ? `<button onclick="deleteMemory(${m.id})" class="text-red-500 hover:text-red-600 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">delete</span></button>` : ''}
+                                                        </div>
+                                                </div>
+                                        </div>`;
+                                }).join('');
+                        } catch (e) {
+                                memoryGrid.innerHTML = '<div class="col-span-full text-center text-red-500 py-12">Gagal memuat memori</div>';
+                        }
+                }
+
+                async function uploadMemory() {
+                        const file = document.getElementById('memoryFile').files[0];
+                        const cat = document.getElementById('memoryCat').value;
+                        const caption = document.getElementById('memoryCaption').value;
+                        const status = document.getElementById('memoryUploadStatus');
+                        if (!file) { status.textContent = 'Pilih file dulu'; status.className = 'text-sm text-red-500 text-center'; return; }
+                        const fd = new FormData();
+                        fd.append('category', cat); fd.append('caption', caption); fd.append('file', file);
+                        try {
+                                const res = await fetch('/api/memories/upload', { method:'POST', body:fd, credentials:'same-origin' });
+                                if (!res.ok) throw new Error('Upload gagal');
+                                status.textContent = 'Upload berhasil!'; status.className = 'text-sm text-green-500 text-center';
+                                document.getElementById('memoryFile').value = ''; document.getElementById('memoryCaption').value = '';
+                                setTimeout(() => { document.getElementById('memoryUpload').classList.add('hidden'); loadMemories(); }, 500);
+                        } catch (e) { status.textContent = e.message; status.className = 'text-sm text-red-500 text-center'; }
+                }
+
+                async function deleteMemory(id) {
+                        if (!confirm('Hapus memori ini?')) return;
+                        try {
+                                const res = await fetch('/api/memories/' + id, { method:'DELETE', credentials:'same-origin' });
+                                if (!res.ok) throw new Error('Gagal'); loadMemories();
+                        } catch (e) { alert('Gagal menghapus'); }
+                }
+
+                // ===== Lightbox / Viewer =====
+                let viewerScale = 1, viewerX = 0, viewerY = 0, isDragging = false, startX, startY;
+                const viewerImg = document.getElementById('viewerImage');
+                const viewerVid = document.getElementById('viewerVideo');
+                const viewerCap = document.getElementById('viewerCaption');
+                const viewerModal = document.getElementById('viewerModal');
+                const viewerContainer = document.getElementById('viewerContainer');
+
+                function openViewer(url, type, caption) {
+                        viewerScale = 1; viewerX = 0; viewerY = 0;
+                        viewerContainer.style.transform = '';
+                        viewerImg.style.display = 'none';
+                        viewerVid.style.display = 'none';
+                        viewerVid.pause?.();
+                        viewerCap.textContent = caption || '';
+
+                        if (type === 'video') {
+                                viewerVid.src = url;
+                                viewerVid.style.display = 'block';
+                                viewerVid.play();
+                        } else {
+                                viewerImg.src = url;
+                                viewerImg.style.display = 'block';
+                                applyViewerTransform();
+                        }
+
+                        viewerModal.classList.remove('hidden');
+                        void viewerModal.offsetWidth;
+                        viewerModal.classList.remove('opacity-0');
+                }
+
+                function closeViewer() {
+                        viewerModal.classList.add('opacity-0');
+                        viewerVid.pause?.();
+                        viewerVid.src = '';
+                        setTimeout(() => { viewerModal.classList.add('hidden'); }, 300);
+                }
+
+                function applyViewerTransform() {
+                        viewerImg.style.transform = `translate(${viewerX}px, ${viewerY}px) scale(${viewerScale})`;
+                }
+
+                function zoomIn() {
+                        viewerScale = Math.min(viewerScale * 1.5, 10); applyViewerTransform();
+                }
+                function zoomOut() {
+                        viewerScale = Math.max(viewerScale / 1.5, 0.5); applyViewerTransform();
+                }
+                function toggleZoom() {
+                        viewerScale = viewerScale > 1.5 ? 1 : 3; viewerX = 0; viewerY = 0; applyViewerTransform();
+                }
+                function resetZoom() {
+                        viewerScale = 1; viewerX = 0; viewerY = 0; applyViewerTransform();
+                }
+
+                // Zoom with scroll wheel
+                viewerContainer.addEventListener('wheel', (e) => {
+                        if (viewerImg.style.display === 'none') return;
+                        e.preventDefault();
+                        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                        const newScale = Math.min(Math.max(viewerScale * delta, 0.5), 10);
+                        const rect = viewerContainer.getBoundingClientRect();
+                        const mx = e.clientX - rect.left - rect.width / 2;
+                        const my = e.clientY - rect.top - rect.height / 2;
+                        const ratio = newScale / viewerScale;
+                        viewerX = mx - ratio * (mx - viewerX);
+                        viewerY = my - ratio * (my - viewerY);
+                        viewerScale = newScale;
+                        applyViewerTransform();
+                }, { passive: false });
+
+                // Pan with drag
+                viewerContainer.addEventListener('mousedown', (e) => {
+                        if (viewerImg.style.display === 'none') return;
+                        isDragging = true; startX = e.clientX - viewerX; startY = e.clientY - viewerY;
+                        viewerImg.classList.remove('cursor-grab'); viewerImg.classList.add('cursor-grabbing');
+                });
+                window.addEventListener('mousemove', (e) => {
+                        if (!isDragging) return;
+                        viewerX = e.clientX - startX; viewerY = e.clientY - startY; applyViewerTransform();
+                });
+                window.addEventListener('mouseup', () => {
+                        if (!isDragging) return;
+                        isDragging = false;
+                        viewerImg.classList.add('cursor-grab'); viewerImg.classList.remove('cursor-grabbing');
+                });
+
+                // Touch support for mobile
+                let lastTouchDist = 0, lastTouchX = 0, lastTouchY = 0;
+                viewerContainer.addEventListener('touchstart', (e) => {
+                        if (viewerImg.style.display === 'none') return;
+                        if (e.touches.length === 2) {
+                                lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                        } else if (e.touches.length === 1) {
+                                lastTouchX = e.touches[0].clientX - viewerX;
+                                lastTouchY = e.touches[0].clientY - viewerY;
+                        }
+                }, { passive: true });
+                viewerContainer.addEventListener('touchmove', (e) => {
+                        if (viewerImg.style.display === 'none') return;
+                        e.preventDefault();
+                        if (e.touches.length === 2) {
+                                const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+                                const delta = dist / lastTouchDist;
+                                viewerScale = Math.min(Math.max(viewerScale * delta, 0.5), 10);
+                                lastTouchDist = dist;
+                                applyViewerTransform();
+                        } else if (e.touches.length === 1) {
+                                viewerX = e.touches[0].clientX - lastTouchX;
+                                viewerY = e.touches[0].clientY - lastTouchY;
+                                applyViewerTransform();
+                        }
+                }, { passive: false });
         </script>
 </body>
 
