@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const sequelize = require('./config/database');
 const apiRoutes = require('./routes/api');
+const networkToolsRoutes = require('./routes/networkTools');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -50,6 +51,7 @@ app.use('/api/auth/login', loginLimiter);
 
 // Routes
 app.use('/api', apiRoutes);
+app.use('/api', networkToolsRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {
