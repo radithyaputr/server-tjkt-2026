@@ -31,9 +31,15 @@ const Memory = sequelize.define('Memory', {
   },
 }, {
   timestamps: true,
+  indexes: [
+    { fields: ['category'] },
+    { fields: ['filename'] },
+    { fields: ['uploadedBy'] },
+  ],
 });
 
 User.hasMany(Memory, { foreignKey: 'uploadedBy' });
 Memory.belongsTo(User, { foreignKey: 'uploadedBy' });
 
 module.exports = Memory;
+

@@ -1,10 +1,11 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { FILE_CATEGORIES, REPO_DIR } = require('../config/constants');
 
 const baseDir = path.join(__dirname, '../../repository');
 
-const CATEGORIES = ['01_Sistem_Operasi', '02_Aplikasi_Utama', '03_Tools_Praktik_TJKT', '04_Video_Tutorial'];
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -98,3 +99,4 @@ const upload = multer({
 });
 
 module.exports = upload;
+

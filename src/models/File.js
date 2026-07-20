@@ -31,6 +31,11 @@ const File = sequelize.define('File', {
   },
 }, {
   timestamps: true,
+  indexes: [
+    { fields: ['category'] },
+    { fields: ['filename'] },
+    { fields: ['uploadedBy'] },
+  ],
 });
 
 // Associations
@@ -38,3 +43,4 @@ User.hasMany(File, { foreignKey: 'uploadedBy' });
 File.belongsTo(User, { foreignKey: 'uploadedBy' });
 
 module.exports = File;
+

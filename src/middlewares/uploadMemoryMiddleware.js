@@ -1,8 +1,9 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { MEMORY_CATEGORIES } = require('../config/constants');
 
-const MEMORY_CATEGORIES = ['MPLS', 'Bukber', 'Study_Tour', 'Class_Meeting', 'Praktik', 'Lainnya'];
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -73,3 +74,4 @@ const upload = multer({
 });
 
 module.exports = upload;
+

@@ -1,18 +1,8 @@
 const File = require('../models/File');
-const User = require('../models/User');
+const { FILE_CATEGORIES, REPO_DIR, formatSize } = require('../config/constants');
 const path = require('path');
 const fs = require('fs');
 
-function formatSize(bytes) {
-  if (bytes === 0) return '0 B';
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const k = 1024;
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + units[i];
-}
-
-const CATEGORIES = ['01_Sistem_Operasi', '02_Aplikasi_Utama', '03_Tools_Praktik_TJKT', '04_Video_Tutorial'];
-const REPO_DIR = path.resolve(__dirname, '../../repository');
 
 const uploadFile = async (req, res) => {
   try {
@@ -20,7 +10,7 @@ const uploadFile = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded.' });
     }
 
-    const category = req.body.category && CATEGORIES.includes(req.body.category)
+    const category = req.body.category && FILE_CATEGORIES.includes(req.body.category)
       ? req.body.category
       : '03_Tools_Praktik_TJKT';
 
@@ -56,7 +46,7 @@ const getFiles = async (req, res) => {
 
     let result = [];
 
-    for (const cat of CATEGORIES) {
+    for (const cat of FILE_CATEGORIES) {
       if (category && category !== 'all' && category !== cat) continue;
 
       const dir = path.join(REPO_DIR, cat);
@@ -114,7 +104,7 @@ const downloadFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    const category = fileRecord.category && CATEGORIES.includes(fileRecord.category)
+    const category = fileRecord.category && FILE_CATEGORIES.includes(fileRecord.category)
       ? fileRecord.category
       : '03_Tools_Praktik_TJKT';
     const safePath = path.join(REPO_DIR, category, path.basename(fileRecord.filename));
@@ -147,7 +137,7 @@ const deleteFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found' });
     }
 
-    const category = fileRecord.category && CATEGORIES.includes(fileRecord.category)
+    const category = fileRecord.category && FILE_CATEGORIES.includes(fileRecord.category)
       ? fileRecord.category
       : '03_Tools_Praktik_TJKT';
     const safePath = path.join(REPO_DIR, category, path.basename(fileRecord.filename));
@@ -176,3 +166,5 @@ module.exports = {
   downloadFile,
   deleteFile
 };
+
+

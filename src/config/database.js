@@ -16,6 +16,7 @@ if (process.env.DB_HOST) {
         max: 10,
         min: 0,
         acquire: 30000,
+        maxUses: 7500,
         idle: 10000,
       },
     }
@@ -29,3 +30,4 @@ if (process.env.DB_HOST) {
 }
 
 module.exports = sequelize;
+

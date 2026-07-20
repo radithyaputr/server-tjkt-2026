@@ -1,10 +1,11 @@
 const { Op } = require('sequelize');
+const { MEMORY_CATEGORIES, MEMO_DIR } = require('../config/constants');
+
 const Memory = require('../models/Memory');
 const path = require('path');
 const fs = require('fs');
 
-const MEMORY_CATEGORIES = ['MPLS', 'Bukber', 'Study_Tour', 'Class_Meeting', 'Praktik', 'Lainnya'];
-const MEMO_DIR = path.resolve(__dirname, '../../repository/memories');
+
 
 const getMemories = async (req, res) => {
   try {
@@ -100,3 +101,5 @@ const deleteMemory = async (req, res) => {
 };
 
 module.exports = { getMemories, uploadMemory, deleteMemory };
+
+

@@ -15,3 +15,7 @@ nginx/logs/
 
 # OS junk
 desktop.ini
+
+database.sqlite
+.env.example
+
