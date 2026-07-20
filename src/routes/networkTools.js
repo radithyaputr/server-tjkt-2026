@@ -1,9 +1,9 @@
-const express = require('express');
-const { exec } = require('child_process');
-const path = require('path');
+﻿const express = require('express');
+const { execFile } = require('child_process');
+const https = require('https');
 const router = express.Router();
 
-// Sanitasi input IP — hanya izinkan IPv4 format
+// Sanitasi input IP - hanya izinkan IPv4 format
 function sanitizeIP(input) {
   const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
   if (!ipRegex.test(input)) return null;
@@ -12,7 +12,7 @@ function sanitizeIP(input) {
   return input;
 }
 
-// Sanitasi input MAC — hanya izinkan format MAC address
+// Sanitasi input MAC - hanya izinkan format MAC address
 function sanitizeMAC(input) {
   const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$/;
   if (!macRegex.test(input)) return null;
@@ -26,7 +26,7 @@ router.get('/ping/:ip', (req, res) => {
     return res.status(400).json({ error: 'Invalid IP address format' });
   }
 
-  exec(`ping -c 4 -W 5 ${ip}`, { timeout: 30000 }, (error, stdout, stderr) => {
+  execFile('ping', ['-c', '4', '-W', '5', ip], { timeout: 30000 }, (error, stdout, stderr) => {
     if (error && !stdout) {
       return res.json({ ip, status: 'unreachable', output: `Host ${ip} tidak dapat dijangkau.` });
     }
@@ -43,19 +43,20 @@ router.get('/mac/:mac', (req, res) => {
 
   const prefix = mac.replace(/[:-]/g, '').substring(0, 6).toUpperCase();
 
-  // Coba cek dari cache lokal dulu via arp
-  exec(`arp -n 2>/dev/null | grep -i "${mac}" || true`, { timeout: 5000 }, (arpErr, arpOut) => {
+  execFile('arp', ['-n'], { timeout: 5000 }, (arpErr, arpOut) => {
     let localInfo = null;
     if (arpOut && arpOut.trim()) {
-      const parts = arpOut.trim().split(/\s+/);
-      localInfo = { ip: parts[0] || null, interface: parts[2] || null };
+      const lines = arpOut.trim().split('\n');
+      for (const line of lines) {
+        if (line.toLowerCase().includes(mac.toLowerCase())) {
+          const parts = line.trim().split(/\s+/);
+          localInfo = { ip: parts[0] || null, interface: parts[2] || null };
+          break;
+        }
+      }
     }
 
-    // Ambil vendor dari API publik macvendors.co
-    const https = require('https');
-    const apiUrl = `https://api.macvendors.com/${mac}`;
-
-    https.get(apiUrl, (apiRes) => {
+    https.get(`https://api.macvendors.com/${encodeURIComponent(mac)}`, (apiRes) => {
       let data = '';
       apiRes.on('data', chunk => data += chunk);
       apiRes.on('end', () => {
