@@ -7,8 +7,26 @@ const MEMO_DIR = path.resolve(__dirname, '../../repository/memories');
 
 const getMemories = async (req, res) => {
   try {
-    const records = await Memory.findAll({ order: [['createdAt', 'DESC']] });
-    const result = records.map(r => {
+    const { search, category, limit = 50, offset = 0 } = req.query;
+    const pageLimit = Math.min(parseInt(limit, 10) || 50, 200);
+    const pageOffset = parseInt(offset, 10) || 0;
+
+    const where = {};
+    if (category && MEMORY_CATEGORIES.includes(category)) {
+      where.category = category;
+    }
+    if (search) {
+      where.originalName = { [require('sequelize').Op.like]: `%${search}%` };
+    }
+
+    const { count, rows } = await Memory.findAndCountAll({
+      where: Object.keys(where).length ? where : undefined,
+      order: [['createdAt', 'DESC']],
+      limit: pageLimit,
+      offset: pageOffset,
+    });
+
+    const result = rows.map(r => {
       const filePath = path.join(MEMO_DIR, r.category, r.filename);
       let fileSize = 0;
       try { fileSize = fs.statSync(filePath).size; } catch (e) { fileSize = 0; }
@@ -22,7 +40,8 @@ const getMemories = async (req, res) => {
         createdAt: r.createdAt,
       };
     });
-    res.json(result);
+
+    res.json({ memories: result, total: count, limit: pageLimit, offset: pageOffset });
   } catch (error) {
     console.error('getMemories error:', error);
     res.status(500).json({ message: 'Failed to retrieve memories' });

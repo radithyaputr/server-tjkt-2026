@@ -108,10 +108,43 @@ const checkRepoAccess = (req, res) => {
   return res.status(401).end();
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current password and new password are required' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+
+    const user = await User.findByPk(req.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isValid) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error) {
+    console.error('changePassword error:', error);
+    res.status(500).json({ message: 'Failed to change password' });
+  }
+};
+
 module.exports = {
   register,
   login,
   getMe,
   logout,
-  checkRepoAccess
+  checkRepoAccess,
+  changePassword
 };

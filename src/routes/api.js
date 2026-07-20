@@ -14,6 +14,7 @@ router.post('/auth/login', authController.login);
 router.post('/auth/logout', verifyToken, authController.logout);
 router.get('/auth/me', verifyToken, authController.getMe);
 router.get('/auth/check-repo', verifyToken, authController.checkRepoAccess);
+router.put('/auth/change-password', verifyToken, authController.changePassword);
 
 // File Routes (public — no login required to view & download)
 router.get('/files', fileController.getFiles);

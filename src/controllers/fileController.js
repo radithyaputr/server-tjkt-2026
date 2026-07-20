@@ -50,14 +50,22 @@ const uploadFile = async (req, res) => {
 
 const getFiles = async (req, res) => {
   try {
-    const result = [];
+    const { search, category, limit = 50, offset = 0 } = req.query;
+    const pageLimit = Math.min(parseInt(limit, 10) || 50, 200);
+    const pageOffset = parseInt(offset, 10) || 0;
+
+    let result = [];
 
     for (const cat of CATEGORIES) {
+      if (category && category !== 'all' && category !== cat) continue;
+
       const dir = path.join(REPO_DIR, cat);
       if (!fs.existsSync(dir)) continue;
       const entries = fs.readdirSync(dir, { withFileTypes: true });
       for (const entry of entries) {
         if (!entry.isFile()) continue;
+
+        if (search && !entry.name.toLowerCase().includes(search.toLowerCase())) continue;
 
         let record = await File.findOne({ where: { filename: entry.name, category: cat } });
         if (!record) {
@@ -88,7 +96,9 @@ const getFiles = async (req, res) => {
     }
 
     result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    res.status(200).json(result);
+    const total = result.length;
+    result = result.slice(pageOffset, pageOffset + pageLimit);
+    res.status(200).json({ files: result, total, limit: pageLimit, offset: pageOffset });
   } catch (error) {
     console.error('getFiles error:', error);
     res.status(500).json({ message: 'Failed to retrieve files' });
