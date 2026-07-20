@@ -18,13 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create .env if missing
+      - name: Restore .env from server
         run: |
-          if [ ! -f .env ]; then
-            if [ -f .env.example ]; then
-              cp .env.example .env
-              echo "WARNING: .env was missing. Copied from .env.example. Please update .env with real values."
-            fi
+          if [ -f /opt/server-tjkt-2026/.env ]; then
+            cp /opt/server-tjkt-2026/.env .env
+            echo ".env restored from /opt/server-tjkt-2026/.env"
+          elif [ ! -f .env ] && [ -f .env.example ]; then
+            cp .env.example .env
+            echo "WARNING: .env not found. Copied from .env.example. Update it with real values or deploy will fail."
           fi
 
       - name: Verify Docker is running

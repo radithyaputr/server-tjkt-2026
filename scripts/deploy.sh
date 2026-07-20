@@ -1,12 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+PROJECT_DIR="/opt/server-tjkt-2026"
 
 echo "============================================"
 echo "  Manual Deploy — server-tjkt-2026"
 echo "  Started: $(date)"
 echo "============================================"
+
+cd "$PROJECT_DIR"
 
 # 1. Check prerequisites
 command -v docker >/dev/null 2>&1 || { echo "Docker is required. Aborting."; exit 1; }

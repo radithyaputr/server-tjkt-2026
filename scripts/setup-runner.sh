@@ -73,8 +73,27 @@ sudo ./svc.sh start
 echo "  -> Runner service installed & started."
 echo ""
 
+# Ensure runner can read .env from project
+echo "[6/7] Setting up .env permissions..."
+PROJECT_DIR="/opt/server-tjkt-2026"
+if [ -d "$PROJECT_DIR" ]; then
+  RUNNER_USER=$(whoami)
+  sudo chmod 644 "$PROJECT_DIR/.env" 2>/dev/null || true
+  echo "  -> .env permissions set for $PROJECT_DIR/.env"
+else
+  echo "  -> Project directory $PROJECT_DIR not found. Create it before first deploy."
+fi
+echo ""
+
+# Install as service
+echo "[7/7] Installing runner as system service..."
+sudo ./svc.sh install
+sudo ./svc.sh start
+echo "  -> Runner service installed & started."
+echo ""
+
 # Verify
-echo "[6/6] Verifying runner is running..."
+echo "Verifying runner..."
 sleep 2
 if ./svc.sh status | grep -q "active (running)"; then
   echo "  -> SUCCESS! Runner is running!"
@@ -86,6 +105,9 @@ echo ""
 echo "============================================"
 echo "  SETUP COMPLETE!"
 echo ""
+echo "  Project di server: $PROJECT_DIR"
+echo "  Runner di:         $RUNNER_DIR"
+echo ""
 echo "  Sekarang setiap kamu git push ke main,"
 echo "  server akan otomatis deploy!"
 echo ""
@@ -93,7 +115,7 @@ echo "  Cek status runner kapan aja:"
 echo "    cd $RUNNER_DIR && sudo ./svc.sh status"
 echo ""
 echo "  Lihat log runner:"
-echo "    cd $RUNNER_DIR && sudo ./svc.sh log"
+echo "    cd $RUNNER_DIR && ./svc.sh log"
 echo ""
 echo "  Hentikan runner:"
 echo "    cd $RUNNER_DIR && sudo ./svc.sh stop"
