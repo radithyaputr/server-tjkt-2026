@@ -19,11 +19,13 @@ const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const allowedRoles = ['Admin', 'Guru', 'Siswa'];
+    const userRole = allowedRoles.includes(role) ? role : 'Siswa';
 
     const user = await User.create({
       username,
       password: hashedPassword,
-      role: role || 'Siswa'
+      role: userRole
     });
 
     res.status(201).json({ message: 'User registered successfully!', userId: user.id });

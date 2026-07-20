@@ -61,7 +61,7 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-const MEMORY_SIZE_LIMIT = parseInt(process.env.MAX_MEMORY_SIZE_MB || '50', 10) * 1024 * 1024;
+const MEMORY_SIZE_LIMIT = Math.max(1, parseInt(process.env.MAX_MEMORY_SIZE_MB || '50', 10) || 50) * 1024 * 1024;
 
 const upload = multer({
   storage,

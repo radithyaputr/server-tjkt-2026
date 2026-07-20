@@ -1,12 +1,14 @@
-# Server TJKT 2026 - Production Ready
+# Server TJKT 2026
 
-Proyek ini adalah backend dan infrastruktur berbasis Node.js, Express, dan MySQL/MariaDB untuk sistem manajemen file dengan autentikasi (JWT) yang dirancang sesuai dengan standar kompetensi Teknik Jaringan Komputer dan Telekomunikasi (TJKT).
+Proyek ini adalah web server kelas berbasis Node.js, Express, dan SQLite untuk sistem manajemen file dengan autentikasi JWT, galeri memori, dan repository online.
 
 ## Fitur Utama
-- **Autentikasi JWT**: Role-based access control (`Admin`, `Guru`, `Siswa`). Token dikirim via HTTPOnly cookie (tahan XSS).
-- **File Management**: Upload, download, dan tracking jumlah unduhan. Hanya file aman (PDF, ZIP, DOCX, ISO, gambar) yang diizinkan.
-- **Keamanan Berlapis**: Rate Limiting (App + Nginx), Helmet.js (HTTP Headers), Content Security Policy, HSTS.
-- **Infrastruktur Nginx**: Reverse proxy, Let's Encrypt SSL config, Strict Security Headers, OCSP Stapling.
+- **Autentikasi JWT**: Role-based access control (`Admin`, `Guru`, `Siswa`). Token dikirim via HTTPOnly cookie.
+- **File Management**: Upload, download, tracking jumlah unduhan. Mendukung banyak format file (PDF, ZIP, RAR, ISO, EXE, MSI, OVA, MP4, MP3, gambar, dokumen, script, dll).
+- **Galeri Memori**: Upload foto/video kenangan dengan lightbox zoom & pan.
+- **Repository Protection**: Folder /repository/ dilindungi auth_request Nginx (hanya Admin/Guru).
+- **Keamanan**: Rate Limiting, Helmet.js HTTP Headers, path traversal protection, MIME validation.
+- **Dark Mode**: Frontend SPA dengan dukungan tema gelap/terang.
 
 ## Prasyarat
 - Node.js (v18 atau lebih baru)
@@ -20,26 +22,21 @@ Proyek ini adalah backend dan infrastruktur berbasis Node.js, Express, dan MySQL
    ```bash
    npm install
    ```
-3. Buat database MySQL/MariaDB:
-   ```bash
-   mysql -u root -p -e "CREATE DATABASE server_tjkt;"
-   ```
-
-4. Konfigurasi environment:
+3. Konfigurasi environment:
    ```bash
    cp .env.example .env
-   nano .env  # Isi DB_USER, DB_PASSWORD sesuai server MySQL/MariaDB kamu
+   nano .env  # Generate JWT_SECRET
    ```
    Generate `JWT_SECRET` dengan string acak:
    ```bash
    node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
    ```
 
-5. Buat Akun Admin Pertama:
+4. Buat Akun Admin Pertama:
    ```bash
    node seed.js
    ```
-   > **IMPORTANT**: Segera ganti password `admin123` setelah login pertama.
+   > **IMPORTANT**: Segera ganti password default `admintjkt2026` setelah login pertama.
 5. Jalankan development server:
    ```bash
    npm run dev
@@ -55,10 +52,16 @@ Semua endpoint berada di bawah path `/api`:
 | POST | `/api/auth/login` | No | - | Login (mendapatkan HTTPOnly cookie) |
 | POST | `/api/auth/logout` | Yes | Any | Logout (menghapus cookie) |
 | GET | `/api/auth/me` | Yes | Any | Cek status login saat ini |
-| GET | `/api/files` | Yes | Any | Daftar semua file |
-| GET | `/api/files/download/:id` | Yes | Any | Download file berdasarkan ID |
-| POST | `/api/files/upload` | Yes | Admin/Guru | Upload file (200MB max, tipe tertentu) |
+| PUT | `/api/auth/change-password` | Yes | Any | Ganti password |
+| GET | `/api/auth/check-repo` | Yes | Admin/Guru | Cek akses repository (untuk Nginx auth_request) |
+| GET | `/api/files` | No | - | Daftar semua file (publik) |
+| GET | `/api/files/download/:id` | No | - | Download file berdasarkan ID (publik) |
+| POST | `/api/files/upload` | Yes | Admin/Guru | Upload file (max 200MB) |
 | DELETE | `/api/files/:id` | Yes | Admin/Guru | Hapus file |
+| GET | `/api/memories` | No | - | Daftar semua memori (publik) |
+| POST | `/api/memories/upload` | Yes | Admin/Guru | Upload foto/video kenangan (max 50MB) |
+| DELETE | `/api/memories/:id` | Yes | Admin/Guru | Hapus memori |
+| GET | `/api/health` | No | - | Health check server |
 
 ## Deployment Server TJKT (Manual — Ubuntu/Debian/Arch)
 
@@ -164,7 +167,7 @@ docker compose exec app node seed.js
 curl http://localhost/api/health
 curl -X POST http://localhost/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
+  -d '{"username":"admintjkt2026","password":"admintjkt2026"}'
 ```
 
 Akses via browser: `http://<ip-server>`
@@ -241,7 +244,7 @@ server-tjkt-2026/
 
 ## Checklist Keamanan
 - [ ] JWT_SECRET diganti dengan string acak (64+ karakter hex)
-- [ ] Password default admin (`admin123`) telah diubah
+- [ ] Password default admin (`admintjkt2026`) telah diubah
 - [ ] HTTPS aktif dengan sertifikat Let's Encrypt
 - [ ] Port Node.js (3000) tidak terbuka ke publik (hanya via Nginx/Docker)
 - [ ] File `.env` tidak masuk ke repository (terdaftar di `.gitignore`)
@@ -256,16 +259,16 @@ server-tjkt-2026/
 Jalankan `sudo certbot --nginx -d domain-anda.com` untuk mendapatkan sertifikat.
 
 **ECONNREFUSED / SequelizeConnectionRefusedError**
-Pastikan MySQL/MariaDB sedang berjalan: `sudo systemctl start mariadb` atau `sudo systemctl start mysql`.
+Aplikasi menggunakan SQLite secara default. Jika error ini muncul, periksa file permission untuk `database.sqlite`.
 
-**ER_BAD_DB_ERROR / Unknown database 'server_tjkt'**
-Buat database: `mysql -u root -p -e "CREATE DATABASE server_tjkt;"`
+**Database error / data hilang setelah restart Docker**
+SQLite tidak di-persist di volume Docker. Cadangkan database dengan `cp database.sqlite database.sqlite.backup` sebelum rebuild.
 
 **Cannot POST /api/auth/login (413 Request Entity Too Large)**
 Pastikan `client_max_body_size` di Nginx sudah diset (lihat `nginx/default.conf`).
 
 **Upload file gagal dengan error "File type not allowed"**
-Periksa ekstensi file. Hanya: PDF, ZIP, RAR, DOC/DOCX, XLS/XLSX, PPT/PPTX, JPG, PNG, GIF, WebP, dan ISO yang diizinkan.
+Periksa ekstensi file. Hanya format tertentu yang diizinkan (PDF, ZIP, RAR, DOC/DOCX, XLS/XLSX, PPT/PPTX, JPG, PNG, GIF, WebP, ISO, MP4, MP3, EXE, MSI, OVA, OVF, TAR, GZ, DEB, RPM, SH, BAT, PS1, IMG, TXT, CSV).
 
 ## Lisensi
 ISC

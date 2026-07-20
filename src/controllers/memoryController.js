@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const Memory = require('../models/Memory');
 const path = require('path');
 const fs = require('fs');
@@ -16,7 +17,7 @@ const getMemories = async (req, res) => {
       where.category = category;
     }
     if (search) {
-      where.originalName = { [require('sequelize').Op.like]: `%${search}%` };
+      where.originalName = { [Op.like]: `%${search}%` };
     }
 
     const { count, rows } = await Memory.findAndCountAll({

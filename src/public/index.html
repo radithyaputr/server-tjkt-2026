@@ -886,7 +886,7 @@
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">storage</span> ${file.sizeFormatted || '—'}</span>
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">calendar_today</span> ${formatDate(file.createdAt)}</span>
                                 </div>
-                                <button onclick="openModal('${file.originalName.replace(/'/g, "\\'")}', ${file.id})" class="w-full py-2.5 rounded-lg border-2 border-primary text-primary font-label font-semibold hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2">
+                                <button class="download-btn w-full py-2.5 rounded-lg border-2 border-primary text-primary font-label font-semibold hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2" data-file='${JSON.stringify(file).replace(/'/g, "&#39;")}'>
                                         <span class="material-symbols-outlined text-[18px]">download</span> Download
                                 </button>
                                 ${delBtn}
@@ -907,6 +907,14 @@
                                 alert(e.message);
                         }
                 }
+
+                // Click delegation for download buttons (avoids XSS from inline onclick)
+                document.getElementById('download-grid').addEventListener('click', function (e) {
+                        const btn = e.target.closest('.download-btn');
+                        if (!btn) return;
+                        const file = JSON.parse(btn.dataset.file);
+                        openModal(file.originalName, file.id);
+                });
 
                 // Fetching files (public — no login required)
                 async function loadFiles() {
