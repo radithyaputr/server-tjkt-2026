@@ -15,6 +15,11 @@ jobs:
         shell: bash
 
     steps:
+      - name: Fix workspace permissions before checkout
+        run: |
+          sudo chown -R $(whoami):$(whoami) "${{ github.workspace }}"
+          chmod -R u+rw "${{ github.workspace }}"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
