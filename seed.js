@@ -1,5 +1,4 @@
 const bcrypt = require('bcryptjs');
-const { Sequelize } = require('sequelize');
 const sequelize = require('./src/config/database');
 const User = require('./src/models/User');
 
@@ -39,14 +38,12 @@ const seedAdmin = async () => {
     console.error('ERROR: Could not seed admin.');
     console.error('');
     if (error.name === 'SequelizeConnectionRefusedError') {
-      console.error('  Make sure MySQL/MariaDB is running and');
-      console.error('  the database credentials in .env are correct.');
-      console.error('');
-      console.error('  Then create the database:');
-      console.error('    mysql -u root -p -e "CREATE DATABASE server_tjkt;"');
+      console.error('  Make sure the database server is running.');
+      console.error('  For SQLite: check file permissions for database.sqlite');
+      console.error('  For MySQL/MariaDB: check credentials in .env');
       console.error('');
     } else if (error.name === 'SequelizeAccessDeniedError') {
-      console.error('  Database access denied. Check DB_USER and DB_PASSWORD in .env');
+      console.error('  Database access denied. Check credentials in .env');
     } else {
       console.error(error);
     }
