@@ -1,6 +1,6 @@
 # Server TJKT 2026
 
-Proyek ini adalah web server kelas berbasis Node.js, Express, dan SQLite untuk sistem manajemen file dengan autentikasi JWT, galeri memori, dan repository online.
+Proyek ini adalah web server kelas berbasis Node.js, Express, dan MySQL/MariaDB (dengan fallback SQLite untuk development lokal) untuk sistem manajemen file dengan autentikasi JWT, galeri memori, dan repository online.
 
 ## Fitur Utama
 - **Autentikasi JWT**: Role-based access control (`Admin`, `Guru`, `Siswa`). Token dikirim via HTTPOnly cookie.
@@ -250,7 +250,7 @@ server-tjkt-2026/
 - [ ] File `.env` tidak masuk ke repository (terdaftar di `.gitignore`)
 - [ ] Semua container berjalan: `docker compose ps`
 - [ ] Log monitoring aktif: `docker compose logs -f`
-- [ ] Backup database rutin: `docker compose exec db mariadb-dump -u root -p server_tjkt > backup.sql`
+- [ ] Backup database rutin: `docker compose exec db mariadb-dump -u root -p"${DB_ROOT_PASSWORD}" server_tjkt > backup.sql`
 - [ ] Auto-restart: `restart: unless-stopped` sudah di docker-compose.yml
 
 ## Troubleshooting
@@ -259,10 +259,10 @@ server-tjkt-2026/
 Jalankan `sudo certbot --nginx -d domain-anda.com` untuk mendapatkan sertifikat.
 
 **ECONNREFUSED / SequelizeConnectionRefusedError**
-Aplikasi menggunakan SQLite secara default. Jika error ini muncul, periksa file permission untuk `database.sqlite`.
+Pastikan MySQL/MariaDB sedang berjalan. Di Docker: `docker compose ps`. Di lokal: `sudo systemctl start mariadb`.
 
 **Database error / data hilang setelah restart Docker**
-SQLite tidak di-persist di volume Docker. Cadangkan database dengan `cp database.sqlite database.sqlite.backup` sebelum rebuild.
+Database MariaDB sudah di-persist via volume `mariadb_data`. Pastikan tidak menjalankan `docker compose down -v` (hapus volume).
 
 **Cannot POST /api/auth/login (413 Request Entity Too Large)**
 Pastikan `client_max_body_size` di Nginx sudah diset (lihat `nginx/default.conf`).
