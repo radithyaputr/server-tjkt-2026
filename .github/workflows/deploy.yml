@@ -1,0 +1,91 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy to Server
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env if missing
+        run: |
+          if [ ! -f .env ]; then
+            if [ -f .env.example ]; then
+              cp .env.example .env
+              echo "WARNING: .env was missing. Copied from .env.example. Please update .env with real values."
+            fi
+          fi
+
+      - name: Verify Docker is running
+        run: |
+          if ! docker info > /dev/null 2>&1; then
+            echo "Docker is not running. Aborting."
+            exit 1
+          fi
+          if ! docker compose version > /dev/null 2>&1; then
+            echo "docker compose plugin is not installed. Aborting."
+            exit 1
+          fi
+
+      - name: Backup database (SQLite)
+        run: |
+          if [ -f database.sqlite ]; then
+            cp database.sqlite "database.sqlite.backup.$(date +%Y%m%d_%H%M%S)"
+            echo "SQLite backup created."
+          fi
+
+      - name: Pull latest images & rebuild
+        run: |
+          docker compose down --remove-orphans
+          docker compose pull
+          docker compose up --build -d
+
+      - name: Health check — wait for app container
+        run: |
+          echo "Waiting for app container to be healthy..."
+          for i in $(seq 1 30); do
+            health=$(docker inspect --format='{{.State.Health.Status}}' tjkt-app 2>/dev/null)
+            if [ "$health" = "healthy" ]; then
+              echo "App container is healthy!"
+              exit 0
+            fi
+            echo "Attempt $i/30 — status: ${health:-unavailable}"
+            sleep 3
+          done
+          echo "Health check failed after 90 seconds."
+          exit 1
+
+      - name: Final verification — HTTP health endpoint
+        run: |
+          sleep 2
+          status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/api/health 2>/dev/null || echo "000")
+          if [ "$status" = "200" ]; then
+            echo "HTTP health endpoint responded with 200 OK."
+          else
+            echo "HTTP health endpoint returned $status. App may not be fully ready."
+            exit 1
+          fi
+
+      - name: Cleanup old backups (keep last 5)
+        run: |
+          ls -t database.sqlite.backup.* 2>/dev/null | tail -n +6 | xargs -r rm
+          echo "Old backups cleaned."
+
+      - name: Deploy success notification
+        run: |
+          echo "============================================"
+          echo "  DEPLOY SUCCESSFUL!"
+          echo "  Commit: ${{ github.sha }}"
+          echo "  Time: $(date)"
+          echo "============================================"

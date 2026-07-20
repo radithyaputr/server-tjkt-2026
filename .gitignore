@@ -6,3 +6,9 @@ uploads/
 logs/
 .DS_Store
 Thumbs.db
+
+# Database backups
+database.sqlite.backup.*
+
+# OS junk
+desktop.ini
