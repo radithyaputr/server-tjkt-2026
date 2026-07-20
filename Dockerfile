@@ -12,6 +12,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY package.json ./
 COPY src/ ./src/
 
+RUN mkdir -p /app/repository /app/repository/memories && \
+    chown -R node:node /app
+
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
@@ -19,5 +22,3 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 
 USER node
 CMD ["node", "src/index.js"]
-
-
