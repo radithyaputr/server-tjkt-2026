@@ -15,19 +15,21 @@ const PORT = process.env.PORT || 3000;
 
 // Security & Middlewares
 app.use(helmet({
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   contentSecurityPolicy: false,
 }));
-const corsOptions = process.env.CORS_ORIGIN
-  ? { origin: process.env.CORS_ORIGIN, credentials: true }
-  : {};
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : true,
+  credentials: true,
+};
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(morgan('dev')); // Logging
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public'))); // Static frontend (if any)
+app.use(express.static(path.join(__dirname, '..', 'public'))); // Static frontend (if any)
 
 // General API Rate Limiting
 const apiLimiter = rateLimit({
@@ -71,7 +73,7 @@ app.use((req, res, next) => {
   if (req.originalUrl.startsWith('/api')) {
     return next();
   }
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 // 404 Handler (mostly for API routes now)
@@ -122,5 +124,8 @@ process.on('unhandledRejection', (reason) => {
 });
 
 startServer();
+
+
+
 
 

@@ -15,40 +15,11 @@
         <!-- Icons -->
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 
-        <!-- Tailwind CSS -->
-        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-        <!-- Tailwind Config -->
-        <script>
-                tailwind.config = {
-                        darkMode: 'class',
-                        theme: {
-                                extend: {
-                                        colors: {
-                                                primary: 'var(--color-primary)',
-                                                'primary-hover': 'var(--color-primary-hover)',
-                                                surface: 'var(--color-surface)',
-                                                'surface-container': 'var(--color-surface-container)',
-                                                'surface-container-high': 'var(--color-surface-container-high)',
-                                                'on-surface': 'var(--color-on-surface)',
-                                                'on-surface-variant': 'var(--color-on-surface-variant)',
-                                                'on-background': 'var(--color-on-background)'
-                                        },
-                                        fontFamily: {
-                                                sans: ['Inter', 'sans-serif'],
-                                                serif: ['Noto Serif', 'serif'],
-                                                label: ['Public Sans', 'sans-serif']
-                                        }
-                                }
-                        }
-                }
-        </script>
         <script>
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                         document.documentElement.classList.add('dark');
                 }
         </script>
-        <style>
                 :root {
                         --color-primary: #094cb2;
                         --color-primary-hover: #073d8f;
@@ -146,6 +117,7 @@
                         overflow: hidden;
                 }
         </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body class="bg-surface text-on-surface font-sans antialiased overflow-x-hidden selection:bg-primary/20">
@@ -1633,3 +1605,4 @@
         <script src="./app.js"></script>
 </body>
 </html>
+

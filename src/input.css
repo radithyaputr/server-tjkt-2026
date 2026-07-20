@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #094cb2;
+  --color-primary-hover: #073d8f;
+  --color-surface: #faf9fa;
+  --color-surface-container: #f0eef1;
+  --color-surface-container-high: #e3dfe5;
+  --color-on-surface: #1c1b1f;
+  --color-on-surface-variant: #49454f;
+  --color-on-background: #1c1b1f;
+}
+
+.dark {
+  --color-primary: #a8c7fa;
+  --color-primary-hover: #d3e3fd;
+  --color-surface: #131314;
+  --color-surface-container: #1e1f20;
+  --color-surface-container-high: #333537;
+  --color-on-surface: #e2e2e2;
+  --color-on-surface-variant: #c4c7c5;
+  --color-on-background: #e2e2e2;
+}
+
+.dark .bg-white:not(.text-primary) {
+  background-color: var(--color-surface-container-high);
+  border-color: #444746;
+  color: var(--color-on-surface);
+}
+
+.dark .bg-blue-50 {
+  background-color: rgba(168, 199, 250, 0.15);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+#downloadModal,
+#loginModal {
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#downloadModal .modal-content,
+#loginModal .modal-content {
+  transition: transform 0.3s ease;
+  transform: scale(0.95);
+}
+
+#downloadModal:not(.hidden) .modal-content,
+#loginModal:not(.hidden) .modal-content {
+  transform: scale(1);
+}
+
+.pacman {
+  width: 0;
+  height: 0;
+  border: 13px solid #f7d51e;
+  border-radius: 50%;
+  border-right-color: transparent;
+  animation: chomp 0.3s linear infinite;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  transition: left 0.3s ease;
+}
+
+@keyframes chomp {
+  0% { transform: translateY(-50%) rotate(0deg); }
+  50% { transform: translateY(-50%) rotate(35deg); }
+  100% { transform: translateY(-50%) rotate(0deg); }
+}
+
+.dots-track {
+  background-image: radial-gradient(circle, var(--color-on-surface-variant) 1.5px, transparent 1.5px);
+  background-size: 20px 100%;
+  background-repeat: repeat-x;
+  background-position: 10px 50%;
+  pointer-events: none;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
