@@ -74,22 +74,14 @@ echo "  -> Runner service installed & started."
 echo ""
 
 # Ensure runner can read .env from project
-echo "[6/7] Setting up .env permissions..."
+echo "[6/6] Setting up .env permissions..."
 PROJECT_DIR="/opt/server-tjkt-2026"
 if [ -d "$PROJECT_DIR" ]; then
-  RUNNER_USER=$(whoami)
   sudo chmod 644 "$PROJECT_DIR/.env" 2>/dev/null || true
   echo "  -> .env permissions set for $PROJECT_DIR/.env"
 else
   echo "  -> Project directory $PROJECT_DIR not found. Create it before first deploy."
 fi
-echo ""
-
-# Install as service
-echo "[7/7] Installing runner as system service..."
-sudo ./svc.sh install
-sudo ./svc.sh start
-echo "  -> Runner service installed & started."
 echo ""
 
 # Verify
